@@ -1,0 +1,59 @@
+tpunit++
+========
+A highly portable, simple C++ xUnit library contained in
+a single header. Documentation and downloads are available
+at http://github.com/tpounds/tpunitpp.
+
+tpunit++ is licensed under the MIT License.
+(http://www.opensource.org/licenses/mit-license.php)
+
+Installation
+============
+Add tpunit++.hpp anywhere to your C++ compiler's include path,
+add test cases and compile together with tpunit++main.cpp or
+your own user-defined main method.
+
+Tested Compilers
+================
+tpunit++ has been tested on several compiler vendors and releases, however,
+I have not exhaustively tested it against everything out there.  That said,
+I do not forsee any complications getting this library to work with any
+compiler supporting basic C++ features and a minimal libc implementation.
+If you do happen to run into problems on a compiler I have not tested against,
+please crete a ticket on the issue tracker so it can be fixed.
+
+|-----------------|----------------------------|--------|
+| version         | flags                      | status |
+|-----------------|----------------------------|--------|
+| GCC (http://gcc.gnu.org)                              |
+--------------------------------------------------------|
+| 2.95.3          | <default>, -fno-exceptions | works  |
+| 3.0.4           | <default>, -fno-exceptions | works  |
+| 3.1.1           | <default>, -fno-exceptions | works  |
+| 3.2.3           | <default>, -fno-exceptions | works  |
+| 3.3.6           | <default>, -fno-exceptions | works  |
+| 3.4.6           | <default>, -fno-exceptions | works  |
+| 4.0.4           | <default>, -fno-exceptions | works  |
+| 4.1.2           | <default>, -fno-exceptions | works  |
+| 4.2.4           | <default>, -fno-exceptions | works  |
+| 4.3.5           | <default>, -fno-exceptions | works  |
+| 4.4.5           | <default>, -fno-exceptions | works  |
+| 4.5.1           | <default>, -fno-exceptions | works  |
+|-----------------|----------------------------|--------|
+| MSVC++ (http://www.microsoft.com)                     |
+--------------------------------------------------------|
+| 6.0             | <default>, /EHsc           | works  |
+| .NET 2002 (7.0) | <default>, /EHsc           | works  |
+| .NET 2003 (7.1) | <default>, /EHsc           | works  |
+| 2005 (8.0)      | <default>, /EHsc           | works  |
+| 2008 (9.0)      | <default>, /EHsc           | works  |
+| 2010 (10.0)     | <default>, /EHsc           | works  |
+|-----------------|----------------------------|--------|
+| Borland C++ (http://www.borland.com)                  |
+--------------------------------------------------------|
+| 5.5             | <default>                  | works  |
+--------------------------------------------------------|
+| Open Watcom (http://www.openwatcom.org)               |
+--------------------------------------------------------|
+| 1.8             | <default>                  | works  |
+--------------------------------------------------------|
