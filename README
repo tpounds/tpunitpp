@@ -11,7 +11,7 @@ Installation
 ============
 Add tpunit++.hpp anywhere to your C++ compiler's include path,
 add test cases and compile together with tpunit++main.cpp or
-your own user-defined main method.
+a custom user-defined main method.
 
 Tested Compilers
 ================
@@ -56,4 +56,10 @@ please crete a ticket on the issue tracker so it can be fixed.
 | Open Watcom (http://www.openwatcom.org)               |
 --------------------------------------------------------|
 | 1.8             | <default>                  | works  |
+--------------------------------------------------------|
+| Clang (http://clang.llvm.org/)                        |
+--------------------------------------------------------|
+| 2.6             | <default>, -fno-exceptions | works  |
+| 2.7             | <default>, -fno-exceptions | works  |
+| 2.8             | <default>, -fno-exceptions | works  |
 --------------------------------------------------------|
