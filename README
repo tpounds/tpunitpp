@@ -26,7 +26,7 @@ please crete a ticket on the issue tracker so it can be fixed.
 | version         | flags                      | status |
 |-----------------|----------------------------|--------|
 | GCC (http://gcc.gnu.org)                              |
---------------------------------------------------------|
+|-------------------------------------------------------|
 | 2.95.3          | <default>, -fno-exceptions | works  |
 | 3.0.4           | <default>, -fno-exceptions | works  |
 | 3.1.1           | <default>, -fno-exceptions | works  |
@@ -41,7 +41,7 @@ please crete a ticket on the issue tracker so it can be fixed.
 | 4.5.1           | <default>, -fno-exceptions | works  |
 |-----------------|----------------------------|--------|
 | MSVC++ (http://www.microsoft.com)                     |
---------------------------------------------------------|
+|-------------------------------------------------------|
 | 6.0             | <default>, /EHsc           | works  |
 | .NET 2002 (7.0) | <default>, /EHsc           | works  |
 | .NET 2003 (7.1) | <default>, /EHsc           | works  |
@@ -50,16 +50,25 @@ please crete a ticket on the issue tracker so it can be fixed.
 | 2010 (10.0)     | <default>, /EHsc           | works  |
 |-----------------|----------------------------|--------|
 | Borland C++ (http://www.borland.com)                  |
---------------------------------------------------------|
+|-------------------------------------------------------|
 | 5.5             | <default>                  | works  |
---------------------------------------------------------|
+|-------------------------------------------------------|
 | Open Watcom (http://www.openwatcom.org)               |
---------------------------------------------------------|
+|-------------------------------------------------------|
+| 1.0             | <default>                  | broken |
+| 1.1             | <default>                  | broken |
+| 1.2             | <default>                  | broken |
+| 1.3             | <default>                  | broken |
+| 1.4             | <default>                  | works  |
+| 1.5             | <default>                  | works  |
+| 1.6             | <default>                  | works  |
+| 1.7             | <default>                  | works  |
 | 1.8             | <default>                  | works  |
---------------------------------------------------------|
+| 1.9             | <default>                  | works  |
+|-------------------------------------------------------|
 | Clang (http://clang.llvm.org/)                        |
---------------------------------------------------------|
+|-------------------------------------------------------|
 | 2.6             | <default>, -fno-exceptions | works  |
 | 2.7             | <default>, -fno-exceptions | works  |
 | 2.8             | <default>, -fno-exceptions | works  |
---------------------------------------------------------|
+|-------------------------------------------------------|

@@ -45,32 +45,33 @@ extern "C"
 #define TPUNITPP_VERSION_MINOR 0
 #define TPUNITPP_VERSION_PATCH 0
 
-#define FAIL() __fail(__FILE__, __LINE__);
-#define PASS() __pass(__FILE__, __LINE__);
+#define ABORT() __fail(__FILE__, __LINE__); return;
+#define FAIL()  __fail(__FILE__, __LINE__);
+#define PASS()  __pass(__FILE__, __LINE__);
 
-#define ASSERT_TRUE(condition) if(condition) { PASS(); } else { FAIL(); return; }
+#define ASSERT_TRUE(condition) if(condition) { PASS(); } else { ABORT(); }
 #define EXPECT_TRUE(condition) if(condition) { PASS(); } else { FAIL(); }
-#define ASSERT_FALSE(condition) if(condition) { FAIL(); return; } else { PASS(); }
+#define ASSERT_FALSE(condition) if(condition) { ABORT(); } else { PASS(); }
 #define EXPECT_FALSE(condition) if(condition) { FAIL(); } else { PASS(); }
-#define ASSERT_EQUAL(lhs, rhs) if(expected == actual) { PASS(); } else { FAIL(); return; }
-#define EXPECT_EQUAL(lhs, rhs) if(expected == actual) { PASS(); } else { FAIL(); }
-#define ASSERT_NOT_EQUAL(lhs, rhs) if(lhs != rhs) { PASS(); } else { FAIL(); return; }
+#define ASSERT_EQUAL(lhs, rhs) if(lhs == rhs) { PASS(); } else { ABORT(); }
+#define EXPECT_EQUAL(lhs, rhs) if(lhs == rhs) { PASS(); } else { FAIL(); }
+#define ASSERT_NOT_EQUAL(lhs, rhs) if(lhs != rhs) { PASS(); } else { ABORT(); }
 #define EXPECT_NOT_EQUAL(lhs, rhs) if(lhs != rhs) { PASS(); } else { FAIL(); }
-#define ASSERT_GREATER_THAN(lhs, rhs) if(lhs > rhs) { PASS(); } else { FAIL(); return; }
+#define ASSERT_GREATER_THAN(lhs, rhs) if(lhs > rhs) { PASS(); } else { ABORT(); }
 #define EXPECT_GREATER_THAN(lhs, rhs) if(lhs > rhs) { PASS(); } else { FAIL(); }
-#define ASSERT_GREATER_THAN_EQUAL(lhs, rhs) if(lhs >= rhs) { PASS(); } else { FAIL(); return; }
+#define ASSERT_GREATER_THAN_EQUAL(lhs, rhs) if(lhs >= rhs) { PASS(); } else { ABORT(); }
 #define EXPECT_GREATER_THAN_EQUAL(lhs, rhs) if(lhs >= rhs) { PASS(); } else { FAIL(); }
-#define ASSERT_LESS_THAN(lhs, rhs) if(lhs < rhs) { PASS(); } else { FAIL(); return; }
+#define ASSERT_LESS_THAN(lhs, rhs) if(lhs < rhs) { PASS(); } else { ABORT(); }
 #define EXPECT_LESS_THAN(lhs, rhs) if(lhs < rhs) { PASS(); } else { FAIL(); }
-#define ASSERT_LESS_THAN_EQUAL(lhs, rhs) if(lhs <= rhs) { PASS(); } else { FAIL(); return; }
+#define ASSERT_LESS_THAN_EQUAL(lhs, rhs) if(lhs <= rhs) { PASS(); } else { ABORT(); }
 #define EXPECT_LESS_THAN_EQUAL(lhs, rhs) if(lhs <= rhs) { PASS(); } else { FAIL(); }
 // TODO: floating point/range macros (e.g. google test)
 
-#define ASSERT_THROW(statement, exception) try { statement; FAIL(); return; } catch(const exception& e) { PASS(); } catch(...) { FAIL(); return; }
+#define ASSERT_THROW(statement, exception) try { statement; ABORT(); } catch(const exception& e) { PASS(); } catch(...) { ABORT(); }
 #define EXPECT_THROW(statement, exception) try { statement; FAIL(); } catch(const exception& e) { PASS(); } catch(...) { FAIL(); }
-#define ASSERT_NO_THROW(statement) try { statement; PASS(); } catch(...) { FAIL(); return; }
+#define ASSERT_NO_THROW(statement) try { statement; PASS(); } catch(...) { ABORT(); }
 #define EXPECT_NO_THROW(statement) try { statement; PASS(); } catch(...) { FAIL(); }
-#define ASSERT_ANY_THROW(statement) try { statement; FAIL(); return; } catch(...) { PASS(); }
+#define ASSERT_ANY_THROW(statement) try { statement; ABORT(); } catch(...) { PASS(); }
 #define EXPECT_ANY_THROW(statement) try { statement; FAIL(); } catch(...) { PASS(); }
 
 #define AFTER(M)        After(&M, "After: " #M)
@@ -88,52 +89,54 @@ namespace tpunit
     */
    class TestFixture
    {
-      /**
-       * A generic class representing a TestFixture method.
-       */
-      struct method
-      {
-         method(TestFixture* obj, void (TestFixture::*addr)(), const char* name, unsigned char type)
-            : _this(obj)
-            , _addr(addr)
-            , _type(type)
-            , _next(0)
-            { strcpy(_name, name); }
+      private:
 
-         TestFixture* _this;
-         void (TestFixture::*_addr)();
-         char _name[256];
-
-         enum
+         /**
+          * A generic class representing a TestFixture method.
+          */
+         struct method
          {
-            AFTER_METHOD,  AFTER_CLASS_METHOD,
-            BEFORE_METHOD, BEFORE_CLASS_METHOD,
-            TEST_METHOD
+            method(TestFixture* obj, void (TestFixture::*addr)(), const char* name, unsigned char type)
+               : _this(obj)
+               , _addr(addr)
+               , _type(type)
+               , _next(0)
+               { strcpy(_name, name); }
+
+            TestFixture* _this;
+            void (TestFixture::*_addr)();
+            char _name[256];
+
+            enum
+            {
+               AFTER_METHOD,  AFTER_CLASS_METHOD,
+               BEFORE_METHOD, BEFORE_CLASS_METHOD,
+               TEST_METHOD
+            };
+            unsigned char _type;
+
+            method* _next;
          };
-         unsigned char _type;
 
-         method* _next;
-      };
+         /**
+          * A generic class representing a TestFixture.
+          */
+         struct fixture
+         {
+            fixture()
+               : _afters(0),  _after_classes(0) 
+               , _befores(0), _before_classes(0) 
+               , _tests(0),   _next(0)
+               {}
 
-      /**
-       * A generic class representing a TestFixture.
-       */
-      struct fixture
-      {
-         fixture()
-            : _afters(0),  _after_classes(0) 
-            , _befores(0), _before_classes(0) 
-            , _tests(0),   _next(0)
-            {}
+            method* _afters;
+            method* _after_classes;
+            method* _befores;
+            method* _before_classes;
+            method* _tests;
 
-         method* _afters;
-         method* _after_classes;
-         method* _befores;
-         method* _before_classes;
-         method* _tests;
-
-         fixture* _next;
-      };
+            fixture* _next;
+         };
 
       public:
 
@@ -185,151 +188,150 @@ namespace tpunit
             __fixtures() = 0;
          }
 
-      /**
-       * Registers a method to run once immediately after each test method registered with the test fixture.
-       *
-       * @param[in] _method A method to register with the test fixture.
-       * @param[in] _name The internal name of the method used when status messages are displayed (currently unused).
-       */
-      template <typename C>
-      method* After(void (C::*_method)(), const char* _name = "")
-         { return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::AFTER_METHOD); }
+         /**
+          * Registers a method to run once immediately after each test method registered with the test fixture.
+          *
+          * @param[in] _method A method to register with the test fixture.
+          * @param[in] _name The internal name of the method used when status messages are displayed.
+          */
+         template <typename C>
+         method* After(void (C::*_method)(), const char* _name)
+            { return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::AFTER_METHOD); }
 
-      /**
-       * Registers a method to run once immediately after all after/before/test methods registered with
-       * the test fixture. Useful for cleaning up shared state used by methods in a test fixture.
-       *
-       * @param[in] _method A method to register with the test fixture.
-       * @param[in] _name The internal name of the method used when status messages are displayed (currently unused).
-       */
-      template <typename C>
-      method* AfterClass(void (C::*_method)(), const char* _name = "")
-         { return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::AFTER_CLASS_METHOD); }
+         /**
+          * Registers a method to run once immediately after all after/before/test methods registered with
+          * the test fixture. Useful for cleaning up shared state used by methods in a test fixture.
+          *
+          * @param[in] _method A method to register with the test fixture.
+          * @param[in] _name The internal name of the method used when status messages are displayed.
+          */
+         template <typename C>
+         method* AfterClass(void (C::*_method)(), const char* _name)
+            { return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::AFTER_CLASS_METHOD); }
 
-      /**
-       * Registers a method to run once immediately before each test method registered with the test fixture.
-       *
-       * @param[in] _method A method to register with the test fixture.
-       * @param[in] _name The internal name of the method used when status messages are displayed (currently unused).
-       */
-      template <typename C>
-      method* Before(void (C::*_method)(), const char* _name = "")
-         { return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::BEFORE_METHOD); }
+         /**
+          * Registers a method to run once immediately before each test method registered with the test fixture.
+          *
+          * @param[in] _method A method to register with the test fixture.
+          * @param[in] _name The internal name of the method used when status messages are displayed.
+          */
+         template <typename C>
+         method* Before(void (C::*_method)(), const char* _name)
+            { return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::BEFORE_METHOD); }
 
-      /**
-       * Registers a method to run once immediately before all after/before/test methods registered with
-       * the test fixture. Useful for intializing shared state used by methods in a test fixture.
-       *
-       * @param[in] _method A method to register with the test fixture.
-       * @param[in] _name The internal name of the method used when status messages are displayed (currently unused).
-       */
-      template <typename C>
-      method* BeforeClass(void (C::*_method)(), const char* _name = "")
-         { return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::BEFORE_CLASS_METHOD); }
+         /**
+          * Registers a method to run once immediately before all after/before/test methods registered with
+          * the test fixture. Useful for intializing shared state used by methods in a test fixture.
+          *
+          * @param[in] _method A method to register with the test fixture.
+          * @param[in] _name The internal name of the method used when status messages are displayed.
+          */
+         template <typename C>
+         method* BeforeClass(void (C::*_method)(), const char* _name)
+            { return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::BEFORE_CLASS_METHOD); }
 
-      /**
-       * Registers a method to run as a test with the test fixture.
-       *
-       * @param[in] _method A method to register with the test fixture.
-       * @param[in] _name The internal name of the method used when status messages are displayed (currently unused).
-       */
-      template <typename C>
-      method* Test(void (C::*_method)(), const char* _name)
-         { return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::TEST_METHOD); }
+         /**
+          * Registers a method to run as a test with the test fixture.
+          *
+          * @param[in] _method A method to register with the test fixture.
+          * @param[in] _name The internal name of the method used when status messages are displayed.
+          */
+         template <typename C>
+         method* Test(void (C::*_method)(), const char* _name)
+            { return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::TEST_METHOD); }
 
+      protected:
 
-   protected:
-
-      static int __do_run()
-      {
-         fixture* f = __fixtures();
-         while(f)
+         static int __do_run()
          {
-            __do_methods(f->_before_classes);
-            __do_tests(f);
-            __do_methods(f->_after_classes);
-            f = f->_next;
+            fixture* f = __fixtures();
+            while(f)
+            {
+               __do_methods(f->_before_classes);
+               __do_tests(f);
+               __do_methods(f->_after_classes);
+               f = f->_next;
+            }
+            return __fails();
          }
-         return __fails();
-      }
- 
-      static void __fail(const char* _file, int _line)
-      {
-         printf("[        FAIL ]    @ %s:%i\n", _file, _line);
-         __fails()++;
-      }
-
-      static void __pass(const char* _file, int _line)
-      {
-   //      if(is_verbose())
-   //         { printf("[        PASS ]    @ %s:%i\n", _file, _line); }
-      }
-
-   private:
-
-      void __delete_methods(method* m)
-      {
-         while(m)
+    
+         static void __fail(const char* _file, int _line)
          {
-            method* mnext = m->_next;
-            delete m;
-            m = mnext;
+            printf("[        FAIL ]    @ %s:%i\n", _file, _line);
+            __fails()++;
          }
-      }
 
-      void __delete_fixtures(fixture* f)
-      {
-         while(f)
+         static void __pass(const char* _file, int _line)
          {
-            __delete_methods(f->_afters);
-            __delete_methods(f->_after_classes);
-            __delete_methods(f->_befores);
-            __delete_methods(f->_before_classes);
-            __delete_methods(f->_tests);
-            fixture* fnext = f->_next;
-            delete f;
-            f = fnext;
+      //      if(is_verbose())
+      //         { printf("[        PASS ]    @ %s:%i\n", _file, _line); }
          }
-      }
 
-      static void __do_methods(method* m)
-      {
-         while(m)
+      private:
+
+         void __delete_methods(method* m)
          {
-            (*m->_this.*m->_addr)();
-            m = m->_next;
+            while(m)
+            {
+               method* mnext = m->_next;
+               delete m;
+               m = mnext;
+            }
          }
-      }
 
-      static void __do_tests(fixture* f)
-      {
-         method* t = f->_tests;
-         while(t)
+         void __delete_fixtures(fixture* f)
          {
-            __do_methods(f->_befores);
-
-            int _prev_fails = __fails();
-            printf("[ RUN         ] %s\n", t->_name);
-            (*t->_this.*t->_addr)();
-            if(_prev_fails == __fails())
-               { printf("[        PASS ] %s\n", t->_name); }
-            t = t->_next;
-
-            __do_methods(f->_afters);
+            while(f)
+            {
+               __delete_methods(f->_afters);
+               __delete_methods(f->_after_classes);
+               __delete_methods(f->_befores);
+               __delete_methods(f->_before_classes);
+               __delete_methods(f->_tests);
+               fixture* fnext = f->_next;
+               delete f;
+               f = fnext;
+            }
          }
-      }
 
-      static int& __fails()
-      {
-         static int _fails = 0;
-         return _fails;
-      }
+         static void __do_methods(method* m)
+         {
+            while(m)
+            {
+               (*m->_this.*m->_addr)();
+               m = m->_next;
+            }
+         }
 
-      static fixture*& __fixtures()
-      {
-         static fixture* _fixtures = 0;
-         return _fixtures;
-      }
+         static void __do_tests(fixture* f)
+         {
+            method* t = f->_tests;
+            while(t)
+            {
+               __do_methods(f->_befores);
+
+               int _prev_fails = __fails();
+               printf("[ RUN         ] %s\n", t->_name);
+               (*t->_this.*t->_addr)();
+               if(_prev_fails == __fails())
+                  { printf("[        PASS ] %s\n", t->_name); }
+               t = t->_next;
+
+               __do_methods(f->_afters);
+            }
+         }
+
+         static int& __fails()
+         {
+            static int _fails = 0;
+            return _fails;
+         }
+
+         static fixture*& __fixtures()
+         {
+            static fixture* _fixtures = 0;
+            return _fixtures;
+         }
    };
 
    /**
