@@ -23,22 +23,10 @@
 #define __TPUNITPP_HPP__
 
 /**
- * The minimal libc externs required by this library are declared
- * inline to workaround compatibility issues between various
- * compiler/linker issues.
+ * Declare printf dependency inline to workaround
+ * potential #include <stdio.h> compiler/linker bugs.
  */
-extern "C"
-{
-   int printf(const char* f, ...);
-   /**
-    * workaround weird gcc+glibc link error with strcpy symbol mangling
-    */
-   #if defined(__GNUC__) && defined(__EXCEPTIONS)
-      char* strcpy(char* d, const char* s) throw();
-   #else
-      char* strcpy(char* d, const char* s);
-   #endif
-}
+extern "C" int printf(const char*, ...);
 
 #define TPUNITPP_VERSION 1000000
 #define TPUNITPP_VERSION_MAJOR 1
@@ -101,7 +89,12 @@ namespace tpunit
                , _addr(addr)
                , _type(type)
                , _next(0)
-               { strcpy(_name, name); }
+            {
+               char* dest = _name;
+               while(name && *name != 0)
+                  { *dest++ = *name++; }
+               dest = 0;
+            }
 
             TestFixture* _this;
             void (TestFixture::*_addr)();
