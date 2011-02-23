@@ -20,7 +20,7 @@ I have not exhaustively tested it against everything out there.  That said,
 I do not forsee any complications getting this library to work with any
 compiler supporting basic C++ features and a minimal libc implementation.
 If you do happen to run into problems on a compiler I have not tested against,
-please crete a ticket on the issue tracker so it can be fixed.
+please create a ticket on the issue tracker so it can be fixed.
 
 |-----------------|----------------------------|--------|
 | version         | flags                      | status |
