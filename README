@@ -72,3 +72,11 @@ please create a ticket on the issue tracker so it can be fixed.
 | 2.7             | <default>, -fno-exceptions | works  |
 | 2.8             | <default>, -fno-exceptions | works  |
 |-------------------------------------------------------|
+| Digital Mars C++ (http://www.digitalmars.com/)        |
+|-------------------------------------------------------|
+| 8.1B5n          | <default>, -Ae             | broken |
+| 8.20n           | <default>, -Ae             | broken |
+| 8.30.11n        | <default>, -Ae             | works  |
+| 8.40.2n         | <default>, -Ae             | works  |
+| 8.52.5n         | <default>, -Ae             | works  |
+|-------------------------------------------------------|
