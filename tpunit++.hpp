@@ -28,15 +28,46 @@
  */
 extern "C" int printf(const char*, ...);
 
+/**
+ * TPUNITPP_VERSION macro contains an integer represented by
+ * the value (M*1000000 + N*1000 + P) where M is the major
+ * version, N is the minor version, and P is the patch version.
+ *
+ * TPUNITPP_VERSION_MAJOR is an integer of the major version.
+ * TPUNITPP_VERSION_MINOR is an integer of the minor version.
+ * TPUNITPP_VERSION_PATCH is an integer of the patch version.
+ */
 #define TPUNITPP_VERSION 1000000
 #define TPUNITPP_VERSION_MAJOR 1
 #define TPUNITPP_VERSION_MINOR 0
 #define TPUNITPP_VERSION_PATCH 0
 
-#define ABORT() __fail(__FILE__, __LINE__); return;
-#define FAIL()  __fail(__FILE__, __LINE__);
-#define PASS()  __pass(__FILE__, __LINE__);
+/**
+ * ABORT(); generates a failure, immediately returning from the
+ * currently executing test function.
+ * FAIL(); generates a failure, allowing the currently executing
+ * test function to continue.
+ * PASS(); does nothing, effectively considered a NOP but may be
+ * useful for annotating test cases with their desired intent.
+ * TRACE(message); adds a trace to the test output with a user
+ * specified string message.
+ */
+#define ABORT() __assert(__FILE__, __LINE__); return;
+#define FAIL()  __assert(__FILE__, __LINE__);
+#define PASS()  /* do nothing */
+#define TRACE(message) __trace(__FILE__, __LINE__, message);
 
+/**
+ * The set of core macros for basic predicate testing of boolean
+ * expressions and value comparisons.
+ *
+ * ASSERT_*(...); generates a failure, immediately returning from
+ * the currently executing test function if the supplied predicate
+ * is not satisfied.
+ * EXPECT_*(...); generates a failure, allowing the currently
+ * executing test function to continue if the supplied predicate
+ * is not satisified.
+ */
 #define ASSERT_TRUE(condition) if(condition) { PASS(); } else { ABORT(); }
 #define EXPECT_TRUE(condition) if(condition) { PASS(); } else { FAIL(); }
 #define ASSERT_FALSE(condition) if(condition) { ABORT(); } else { PASS(); }
@@ -55,6 +86,20 @@ extern "C" int printf(const char*, ...);
 #define EXPECT_LESS_THAN_EQUAL(lhs, rhs) if(lhs <= rhs) { PASS(); } else { FAIL(); }
 // TODO: floating point/range macros (e.g. google test)
 
+/**
+ * The set of macros for checking whether a statement will throw or not
+ * throw an exception. Note, the checked exception macros will generally
+ * not work with compilers that do not support exceptions or have them
+ * explicitly turned off using a compiler flag (e.g. -fno-exceptions).
+ *
+ * ASSERT|EXPECT_THROW(statement, exception); generates a failure if
+ * the given statement does not throw the supplied excetion.
+ * ASSERT|EXPECT_NO_THROW(statement, exception); generates a failure
+ * if the given statement throws any exception. Useful for ensuring
+ * a statement never throws an exception.
+ * ASSERT|EXPECT_ANY_THROW(statement); generates a failure if the
+ * given statement does not throw any exceptions.
+ */
 #define ASSERT_THROW(statement, exception) try { statement; ABORT(); } catch(const exception& e) { PASS(); } catch(...) { ABORT(); }
 #define EXPECT_THROW(statement, exception) try { statement; FAIL(); } catch(const exception& e) { PASS(); } catch(...) { FAIL(); }
 #define ASSERT_NO_THROW(statement) try { statement; PASS(); } catch(...) { ABORT(); }
@@ -62,6 +107,22 @@ extern "C" int printf(const char*, ...);
 #define ASSERT_ANY_THROW(statement) try { statement; ABORT(); } catch(...) { PASS(); }
 #define EXPECT_ANY_THROW(statement) try { statement; FAIL(); } catch(...) { PASS(); }
 
+/**
+ * The set of convenience macros for registering functions with the test
+ * fixture.
+ *
+ * AFTER(function); registers a function to run once after each subsequent
+ * test function within a test fixture.
+ * AFTER_CLASS(function); registers a function to run once after all test
+ * functions within a test fixture. Useful for cleaning up shared state
+ * used by all test functions.
+ * BEFORE(function); registers a function to run once before each subsequent
+ * test function within a test fixture.
+ * BEFORE_CLASS(function); registers a function to run once before all test
+ * functions within a test fixture. Useful for initializing shared state
+ * used by all test functions.
+ * TEST(function); registers a function to run as a test within a test fixture.
+ */
 #define AFTER(M)        After(&M, "After: " #M)
 #define AFTER_CLASS(M)  AfterClass(&M, "AfterClass: " #M)
 #define BEFORE(M)       Before(&M, "Before: " #M)
@@ -80,7 +141,7 @@ namespace tpunit
       private:
 
          /**
-          * A generic class representing a TestFixture method.
+          * An internal class representing a TestFixture class.
           */
          struct method
          {
@@ -112,7 +173,7 @@ namespace tpunit
          };
 
          /**
-          * A generic class representing a TestFixture.
+          * An internal class representing a TestFixture class.
           */
          struct fixture
          {
@@ -129,6 +190,24 @@ namespace tpunit
             method* _tests;
 
             fixture* _next;
+         };
+
+         /**
+          * A struct holding test statistics. 
+          */
+         struct stats
+         {
+            stats()
+               : _assertions(0)
+               , _failures(0)
+               , _passes(0)
+               , _traces(0)
+               {}
+
+            int _assertions;
+            int _failures;
+            int _passes;
+            int _traces;
          };
 
       public:
@@ -240,29 +319,31 @@ namespace tpunit
             fixture* f = __fixtures();
             while(f)
             {
+               printf("[--------------]\n");
                __do_methods(f->_before_classes);
                __do_tests(f);
                __do_methods(f->_after_classes);
+               printf("[--------------]\n\n");
                f = f->_next;
             }
-            return __fails();
-         }
-    
-         static void __fail(const char* _file, int _line)
-         {
-            printf("[        FAIL ]    @ %s:%i\n", _file, _line);
-            __fails()++;
+            printf("[==============]\n");
+            printf("[ TEST RESULTS ]\n");
+            printf("[==============]\n");
+            printf("[    PASSED    ] %4i tests\n", __stats()._passes);
+            printf("[    FAILED    ] %4i tests\n", __stats()._failures);
+            printf("[==============]\n");
+            return __stats()._failures;
          }
 
-         static void __pass(const char* _file, int _line)
-         {
-      //      if(is_verbose())
-      //         { printf("[        PASS ]    @ %s:%i\n", _file, _line); }
-         }
+         static void __assert(const char* _file, int _line)
+            { printf("[              ]    assert #%i at %s:%i\n", ++__stats()._assertions, _file, _line); }
+
+         static void __trace(const char* _file, int _line, const char* _message)
+            { printf("[              ]    trace #%i at %s:%i: %s\n", ++__stats()._traces, _file, _line, _message); }
 
       private:
 
-         void __delete_methods(method* m)
+         static void __delete_methods(method* m)
          {
             while(m)
             {
@@ -272,7 +353,7 @@ namespace tpunit
             }
          }
 
-         void __delete_fixtures(fixture* f)
+         static void __delete_fixtures(fixture* f)
          {
             while(f)
             {
@@ -303,21 +384,29 @@ namespace tpunit
             {
                __do_methods(f->_befores);
 
-               int _prev_fails = __fails();
-               printf("[ RUN         ] %s\n", t->_name);
+               int _prev_assertions = __stats()._assertions;
+               printf("[ RUN          ] %s\n", t->_name);
                (*t->_this.*t->_addr)();
-               if(_prev_fails == __fails())
-                  { printf("[        PASS ] %s\n", t->_name); }
+               if(_prev_assertions == __stats()._assertions)
+               {
+                  printf("[       PASSED ] %s\n", t->_name);
+                  __stats()._passes++;
+               }
+               else
+               {
+                  printf("[       FAILED ] %s\n", t->_name);
+                  __stats()._failures++;
+               }
                t = t->_next;
 
                __do_methods(f->_afters);
             }
          }
 
-         static int& __fails()
+         static stats& __stats()
          {
-            static int _fails = 0;
-            return _fails;
+            static stats _stats;
+            return _stats;
          }
 
          static fixture*& __fixtures()
