@@ -84,7 +84,19 @@ extern "C" int printf(const char*, ...);
 #define EXPECT_LESS_THAN(lhs, rhs) if(lhs < rhs) { PASS(); } else { FAIL(); }
 #define ASSERT_LESS_THAN_EQUAL(lhs, rhs) if(lhs <= rhs) { PASS(); } else { ABORT(); }
 #define EXPECT_LESS_THAN_EQUAL(lhs, rhs) if(lhs <= rhs) { PASS(); } else { FAIL(); }
-// TODO: floating point/range macros (e.g. google test)
+
+/**
+ * The set of floating-point macros used to compare double/float values.
+ *
+ * ASSERT|EXPECT_FLOAT_EQUAL(lhs, rhs); generates a failure if the given
+ * floating-point values are not within 4 ULPs of each other.
+ * ASSERT|EXPECT_FLOAT_NEAR(lhs, rhs, abs_error); generates a failure if
+ * the given floating-point values exceed the absolute error.
+ */
+#define ASSERT_FLOAT_EQUAL(lhs, rhs) if(__fp_equal(lhs, rhs, 4)) { PASS(); } else { ABORT(); }
+#define EXPECT_FLOAT_EQUAL(lhs, rhs) if(__fp_equal(lhs, rhs, 4)) { PASS(); } else { FAIL(); }
+#define ASSERT_FLOAT_NEAR(lhs, rhs, abs_error) if(((lhs > rhs) ? lhs - rhs : rhs - lhs) <= abs_error) { PASS(); } else { ABORT(); }
+#define EXPECT_FLOAT_NEAR(lhs, rhs, abs_error) if(((lhs > rhs) ? lhs - rhs : rhs - lhs) <= abs_error) { PASS(); } else { FAIL(); }
 
 /**
  * The set of macros for checking whether a statement will throw or not
@@ -333,6 +345,91 @@ namespace tpunit
             printf("[    FAILED    ] %4i tests\n", __stats()._failures);
             printf("[==============]\n");
             return __stats()._failures;
+         }
+
+         /**
+          * Determine if two binary32 single precision IEEE 754 floating-point
+          * numbers are equal using unit in the last place (ULP) analysis.
+          *
+          * http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm 
+          */
+         static bool __fp_equal(float lhs, float rhs, unsigned char ulps)
+         {
+            union
+            {
+               float f;
+               char  c[4];
+            } lhs_u, rhs_u;
+            lhs_u.f = lhs;
+            rhs_u.f = rhs;
+
+            bool lil_endian = ((unsigned char) 0x00FF) == 0xFF;
+            int msb = lil_endian ? 3 : 0;
+            int lsb = lil_endian ? 0 : 3;
+            if(lhs_u.c[msb] < 0)
+            {
+               lhs_u.c[0 ^ lsb] = 0x00 - lhs_u.c[0 ^ lsb];
+               lhs_u.c[1 ^ lsb] = (((unsigned char) lhs_u.c[0 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[1 ^ lsb];
+               lhs_u.c[2 ^ lsb] = (((unsigned char) lhs_u.c[1 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[2 ^ lsb];
+               lhs_u.c[3 ^ lsb] = (((unsigned char) lhs_u.c[2 ^ lsb] > 0x00) ? 0x7F : 0x80) - lhs_u.c[3 ^ lsb];
+            }
+            if(rhs_u.c[msb] < 0)
+            {
+               rhs_u.c[0 ^ lsb] = 0x00 - rhs_u.c[0 ^ lsb];
+               rhs_u.c[1 ^ lsb] = (((unsigned char) rhs_u.c[0 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[1 ^ lsb];
+               rhs_u.c[2 ^ lsb] = (((unsigned char) rhs_u.c[1 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[2 ^ lsb];
+               rhs_u.c[3 ^ lsb] = (((unsigned char) rhs_u.c[2 ^ lsb] > 0x00) ? 0x7F : 0x80) - rhs_u.c[3 ^ lsb];
+            }
+            return (lhs_u.c[1] == rhs_u.c[1] && lhs_u.c[2] == rhs_u.c[2] && lhs_u.c[msb] == rhs_u.c[msb]) &&
+                   ((lhs_u.c[lsb] > rhs_u.c[lsb]) ? lhs_u.c[lsb] - rhs_u.c[lsb] : rhs_u.c[lsb] - lhs_u.c[lsb]) <= ulps;
+         }
+
+         /**
+          * Determine if two binary64 double precision IEEE 754 floating-point
+          * numbers are equal using unit in the last place (ULP) analysis.
+          *
+          * http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm 
+          */
+         static bool __fp_equal(double lhs, double rhs, unsigned char ulps)
+         {
+            union
+            {
+               double d;
+               char   c[8];
+            } lhs_u, rhs_u;
+            lhs_u.d = lhs;
+            rhs_u.d = rhs;
+
+            bool lil_endian = ((unsigned char) 0x00FF) == 0xFF;
+            int msb = lil_endian ? 7 : 0;
+            int lsb = lil_endian ? 0 : 7;
+            if(lhs_u.c[msb] < 0)
+            {
+               lhs_u.c[0 ^ lsb] = 0x00 - lhs_u.c[0 ^ lsb];
+               lhs_u.c[1 ^ lsb] = (((unsigned char) lhs_u.c[0 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[1 ^ lsb];
+               lhs_u.c[2 ^ lsb] = (((unsigned char) lhs_u.c[1 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[2 ^ lsb];
+               lhs_u.c[3 ^ lsb] = (((unsigned char) lhs_u.c[2 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[3 ^ lsb];
+               lhs_u.c[4 ^ lsb] = (((unsigned char) lhs_u.c[3 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[4 ^ lsb];
+               lhs_u.c[5 ^ lsb] = (((unsigned char) lhs_u.c[4 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[5 ^ lsb];
+               lhs_u.c[6 ^ lsb] = (((unsigned char) lhs_u.c[5 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[6 ^ lsb];
+               lhs_u.c[7 ^ lsb] = (((unsigned char) lhs_u.c[6 ^ lsb] > 0x00) ? 0x7F : 0x80) - lhs_u.c[7 ^ lsb];
+            }
+            if(rhs_u.c[msb] < 0)
+            {
+               rhs_u.c[0 ^ lsb] = 0x00 - rhs_u.c[0 ^ lsb];
+               rhs_u.c[1 ^ lsb] = (((unsigned char) rhs_u.c[0 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[1 ^ lsb];
+               rhs_u.c[2 ^ lsb] = (((unsigned char) rhs_u.c[1 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[2 ^ lsb];
+               rhs_u.c[3 ^ lsb] = (((unsigned char) rhs_u.c[2 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[3 ^ lsb];
+               rhs_u.c[4 ^ lsb] = (((unsigned char) rhs_u.c[3 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[4 ^ lsb];
+               rhs_u.c[5 ^ lsb] = (((unsigned char) rhs_u.c[4 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[5 ^ lsb];
+               rhs_u.c[6 ^ lsb] = (((unsigned char) rhs_u.c[5 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[6 ^ lsb];
+               rhs_u.c[7 ^ lsb] = (((unsigned char) rhs_u.c[6 ^ lsb] > 0x00) ? 0x7F : 0x80) - rhs_u.c[7 ^ lsb];
+            }
+            return (lhs_u.c[1] == rhs_u.c[1] && lhs_u.c[2] == rhs_u.c[2] && 
+                    lhs_u.c[3] == rhs_u.c[3] && lhs_u.c[4] == rhs_u.c[4] && 
+                    lhs_u.c[5] == rhs_u.c[5] && lhs_u.c[6] == rhs_u.c[6] &&
+                    lhs_u.c[msb] == rhs_u.c[msb]) &&
+                   ((lhs_u.c[lsb] > rhs_u.c[lsb]) ? lhs_u.c[lsb] - rhs_u.c[lsb] : rhs_u.c[lsb] - lhs_u.c[lsb]) <= ulps;
          }
 
          static void __assert(const char* _file, int _line)
