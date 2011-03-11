@@ -160,6 +160,7 @@ namespace tpunit
             method(TestFixture* obj, void (TestFixture::*addr)(), const char* name, unsigned char type)
                : _this(obj)
                , _addr(addr)
+               , _name()
                , _type(type)
                , _next(0)
             {
@@ -168,6 +169,9 @@ namespace tpunit
                   { *dest++ = *name++; }
                dest = 0;
             }
+
+            ~method()
+               { delete _next; }
 
             TestFixture* _this;
             void (TestFixture::*_addr)();
@@ -194,6 +198,16 @@ namespace tpunit
                , _befores(0), _before_classes(0) 
                , _tests(0),   _next(0)
                {}
+
+            ~fixture()
+            {
+               delete _afters;
+               delete _after_classes;
+               delete _befores;
+               delete _before_classes;
+               delete _tests;
+               delete _next;
+            }
 
             method* _afters;
             method* _after_classes;
@@ -236,9 +250,9 @@ namespace tpunit
                      method* m20 = 0, method* m21 = 0, method* m22 = 0, method* m23 = 0, method* m24 = 0,
                      method* m25 = 0, method* m26 = 0, method* m27 = 0, method* m28 = 0, method* m29 = 0)
          {
-            fixture* f = __fixtures();
-            while(f && f->_next) { f = f->_next; }
-            f = (f) ? f->_next = new fixture : __fixtures() = new fixture;
+            fixture* f = &__fixtures();
+            while(f->_next) { f = f->_next; }
+            f = f->_next = new fixture;
 
             #define SET_FIXTURE_METHOD(M) \
                if(M) \
@@ -264,12 +278,6 @@ namespace tpunit
             SET_FIXTURE_METHOD(m24) SET_FIXTURE_METHOD(m25) SET_FIXTURE_METHOD(m26) SET_FIXTURE_METHOD(m27)
             SET_FIXTURE_METHOD(m28) SET_FIXTURE_METHOD(m29)
             #undef SET_FIXTURE_METHOD
-         }
-
-         ~TestFixture()
-         {
-            __delete_fixtures(__fixtures());
-            __fixtures() = 0;
          }
 
          /**
@@ -328,7 +336,7 @@ namespace tpunit
 
          static int __do_run()
          {
-            fixture* f = __fixtures();
+            fixture* f = __fixtures()._next;
             while(f)
             {
                printf("[--------------]\n");
@@ -440,31 +448,6 @@ namespace tpunit
 
       private:
 
-         static void __delete_methods(method* m)
-         {
-            while(m)
-            {
-               method* mnext = m->_next;
-               delete m;
-               m = mnext;
-            }
-         }
-
-         static void __delete_fixtures(fixture* f)
-         {
-            while(f)
-            {
-               __delete_methods(f->_afters);
-               __delete_methods(f->_after_classes);
-               __delete_methods(f->_befores);
-               __delete_methods(f->_before_classes);
-               __delete_methods(f->_tests);
-               fixture* fnext = f->_next;
-               delete f;
-               f = fnext;
-            }
-         }
-
          static void __do_methods(method* m)
          {
             while(m)
@@ -506,9 +489,9 @@ namespace tpunit
             return _stats;
          }
 
-         static fixture*& __fixtures()
+         static fixture& __fixtures()
          {
-            static fixture* _fixtures = 0;
+            static fixture _fixtures;
             return _fixtures;
          }
    };
