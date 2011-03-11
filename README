@@ -22,6 +22,22 @@ compiler supporting basic C++ features and a minimal libc implementation.
 If you do happen to run into problems on a compiler I have not tested against,
 please create a ticket on the issue tracker so it can be fixed.
 
+Some compilers have issues using the fully qualified class with namespace
+syntax (e.g. ns::class). Try the 'using' directive to workaround the issue.
+
+e.g.  using namesapce tpunit;
+      using tpunit::TestFixture;
+
+The primary issue preventing tpunit++ from working with a compiler is a
+lack of member function template specialization. This feature is required
+to support tpunit++'s registration methods (e.g. After, Before, Test). In
+general, tpunit++ should work with any compiler supporting this capability.
+
+Additionally, some linkers do not work with file names that contain non-
+alphanumeric characters (e.g. tpunit++main.cpp). Try renaming these files
+to include only alphanumeric characters or configure the compiler to emit
+object files that do not include illegal characters.
+
 |-----------------|----------------------------|--------|
 | version         | flags                      | status |
 |-----------------|----------------------------|--------|
@@ -74,8 +90,11 @@ please create a ticket on the issue tracker so it can be fixed.
 |-------------------------------------------------------|
 | Digital Mars C++ (http://www.digitalmars.com/)        |
 |-------------------------------------------------------|
+| 7.7B1n          | <default>, -Ae             | broken |
 | 8.1B5n          | <default>, -Ae             | broken |
 | 8.20n           | <default>, -Ae             | broken |
+| 8.28.5n         | <default>, -Ae             | broken |
+| 8.29.21n        | <default>, -Ae             | works  |
 | 8.30.11n        | <default>, -Ae             | works  |
 | 8.40.2n         | <default>, -Ae             | works  |
 | 8.52.5n         | <default>, -Ae             | works  |
