@@ -72,7 +72,7 @@ extern "C" int printf(const char*, ...);
 #define EXPECT_TRUE(condition) if(condition) { PASS(); } else { FAIL(); }
 #define ASSERT_FALSE(condition) if(condition) { ABORT(); } else { PASS(); }
 #define EXPECT_FALSE(condition) if(condition) { FAIL(); } else { PASS(); }
-#define ASSERT_EQUAL(lhs, rhs) if((lhs) == rhs) { PASS(); } else { ABORT(); }
+#define ASSERT_EQUAL(lhs, rhs) if((lhs) == (rhs)) { PASS(); } else { ABORT(); }
 #define EXPECT_EQUAL(lhs, rhs) if((lhs) == (rhs)) { PASS(); } else { FAIL(); }
 #define ASSERT_NOT_EQUAL(lhs, rhs) if((lhs) != (rhs)) { PASS(); } else { ABORT(); }
 #define EXPECT_NOT_EQUAL(lhs, rhs) if((lhs) != (rhs)) { PASS(); } else { FAIL(); }
