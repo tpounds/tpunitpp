@@ -72,18 +72,18 @@ extern "C" int printf(const char*, ...);
 #define EXPECT_TRUE(condition) if(condition) { PASS(); } else { FAIL(); }
 #define ASSERT_FALSE(condition) if(condition) { ABORT(); } else { PASS(); }
 #define EXPECT_FALSE(condition) if(condition) { FAIL(); } else { PASS(); }
-#define ASSERT_EQUAL(lhs, rhs) if(lhs == rhs) { PASS(); } else { ABORT(); }
-#define EXPECT_EQUAL(lhs, rhs) if(lhs == rhs) { PASS(); } else { FAIL(); }
-#define ASSERT_NOT_EQUAL(lhs, rhs) if(lhs != rhs) { PASS(); } else { ABORT(); }
-#define EXPECT_NOT_EQUAL(lhs, rhs) if(lhs != rhs) { PASS(); } else { FAIL(); }
-#define ASSERT_GREATER_THAN(lhs, rhs) if(lhs > rhs) { PASS(); } else { ABORT(); }
-#define EXPECT_GREATER_THAN(lhs, rhs) if(lhs > rhs) { PASS(); } else { FAIL(); }
-#define ASSERT_GREATER_THAN_EQUAL(lhs, rhs) if(lhs >= rhs) { PASS(); } else { ABORT(); }
-#define EXPECT_GREATER_THAN_EQUAL(lhs, rhs) if(lhs >= rhs) { PASS(); } else { FAIL(); }
-#define ASSERT_LESS_THAN(lhs, rhs) if(lhs < rhs) { PASS(); } else { ABORT(); }
-#define EXPECT_LESS_THAN(lhs, rhs) if(lhs < rhs) { PASS(); } else { FAIL(); }
-#define ASSERT_LESS_THAN_EQUAL(lhs, rhs) if(lhs <= rhs) { PASS(); } else { ABORT(); }
-#define EXPECT_LESS_THAN_EQUAL(lhs, rhs) if(lhs <= rhs) { PASS(); } else { FAIL(); }
+#define ASSERT_EQUAL(lhs, rhs) if((lhs) == rhs) { PASS(); } else { ABORT(); }
+#define EXPECT_EQUAL(lhs, rhs) if((lhs) == (rhs)) { PASS(); } else { FAIL(); }
+#define ASSERT_NOT_EQUAL(lhs, rhs) if((lhs) != (rhs)) { PASS(); } else { ABORT(); }
+#define EXPECT_NOT_EQUAL(lhs, rhs) if((lhs) != (rhs)) { PASS(); } else { FAIL(); }
+#define ASSERT_GREATER_THAN(lhs, rhs) if((lhs) > (rhs)) { PASS(); } else { ABORT(); }
+#define EXPECT_GREATER_THAN(lhs, rhs) if((lhs) > (rhs)) { PASS(); } else { FAIL(); }
+#define ASSERT_GREATER_THAN_EQUAL(lhs, rhs) if((lhs) >= (rhs)) { PASS(); } else { ABORT(); }
+#define EXPECT_GREATER_THAN_EQUAL(lhs, rhs) if((lhs) >= (rhs)) { PASS(); } else { FAIL(); }
+#define ASSERT_LESS_THAN(lhs, rhs) if((lhs) < (rhs)) { PASS(); } else { ABORT(); }
+#define EXPECT_LESS_THAN(lhs, rhs) if((lhs) < (rhs)) { PASS(); } else { FAIL(); }
+#define ASSERT_LESS_THAN_EQUAL(lhs, rhs) if((lhs) <= (rhs)) { PASS(); } else { ABORT(); }
+#define EXPECT_LESS_THAN_EQUAL(lhs, rhs) if((lhs) <= (rhs)) { PASS(); } else { FAIL(); }
 
 /**
  * The set of floating-point macros used to compare double/float values.
@@ -95,8 +95,8 @@ extern "C" int printf(const char*, ...);
  */
 #define ASSERT_FLOAT_EQUAL(lhs, rhs) if(__fp_equal(lhs, rhs, 4)) { PASS(); } else { ABORT(); }
 #define EXPECT_FLOAT_EQUAL(lhs, rhs) if(__fp_equal(lhs, rhs, 4)) { PASS(); } else { FAIL(); }
-#define ASSERT_FLOAT_NEAR(lhs, rhs, abs_error) if(((lhs > rhs) ? lhs - rhs : rhs - lhs) <= abs_error) { PASS(); } else { ABORT(); }
-#define EXPECT_FLOAT_NEAR(lhs, rhs, abs_error) if(((lhs > rhs) ? lhs - rhs : rhs - lhs) <= abs_error) { PASS(); } else { FAIL(); }
+#define ASSERT_FLOAT_NEAR(lhs, rhs, abs_error) if((((lhs) > (rhs)) ? (lhs) - (rhs) : (rhs) - (lhs)) <= (abs_error)) { PASS(); } else { ABORT(); }
+#define EXPECT_FLOAT_NEAR(lhs, rhs, abs_error) if((((lhs) > (rhs)) ? (lhs) - (rhs) : (rhs) - (lhs)) <= (abs_error)) { PASS(); } else { FAIL(); }
 
 /**
  * The set of macros for checking whether a statement will throw or not
