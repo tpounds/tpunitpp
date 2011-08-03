@@ -37,10 +37,10 @@ extern "C" int printf(const char*, ...);
  * TPUNITPP_VERSION_MINOR is an integer of the minor version.
  * TPUNITPP_VERSION_PATCH is an integer of the patch version.
  */
-#define TPUNITPP_VERSION 1000001
+#define TPUNITPP_VERSION 1000002
 #define TPUNITPP_VERSION_MAJOR 1
 #define TPUNITPP_VERSION_MINOR 0
-#define TPUNITPP_VERSION_PATCH 1
+#define TPUNITPP_VERSION_PATCH 2
 
 /**
  * ABORT(); generates a failure, immediately returning from the
