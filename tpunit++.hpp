@@ -365,15 +365,31 @@ namespace tpunit
          {
             union
             {
-               void* __static_assert[sizeof(float) == sizeof(long) ? 1 : -1];
                float f;
-               long  l;
+               char  c[4];
             } lhs_u, rhs_u;
             lhs_u.f = lhs;
             rhs_u.f = rhs;
-            lhs_u.l = (lhs_u.l < 0) ? -(~lhs_u.l + 1) : lhs_u.l;
-            rhs_u.l = (rhs_u.l < 0) ? -(~rhs_u.l + 1) : rhs_u.l;
-            return ((lhs_u.l > rhs_u.l) ? lhs_u.l - rhs_u.l : rhs_u.l - lhs_u.l) <= ulps;
+
+            bool lil_endian = ((unsigned char) 0x00FF) == 0xFF;
+            int msb = lil_endian ? 3 : 0;
+            int lsb = lil_endian ? 0 : 3;
+            if(lhs_u.c[msb] < 0)
+            {
+               lhs_u.c[0 ^ lsb] = 0x00 - lhs_u.c[0 ^ lsb];
+               lhs_u.c[1 ^ lsb] = (((unsigned char) lhs_u.c[0 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[1 ^ lsb];
+               lhs_u.c[2 ^ lsb] = (((unsigned char) lhs_u.c[1 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[2 ^ lsb];
+               lhs_u.c[3 ^ lsb] = (((unsigned char) lhs_u.c[2 ^ lsb] > 0x00) ? 0x7F : 0x80) - lhs_u.c[3 ^ lsb];
+            }
+            if(rhs_u.c[msb] < 0)
+            {
+               rhs_u.c[0 ^ lsb] = 0x00 - rhs_u.c[0 ^ lsb];
+               rhs_u.c[1 ^ lsb] = (((unsigned char) rhs_u.c[0 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[1 ^ lsb];
+               rhs_u.c[2 ^ lsb] = (((unsigned char) rhs_u.c[1 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[2 ^ lsb];
+               rhs_u.c[3 ^ lsb] = (((unsigned char) rhs_u.c[2 ^ lsb] > 0x00) ? 0x7F : 0x80) - rhs_u.c[3 ^ lsb];
+            }
+            return (lhs_u.c[1] == rhs_u.c[1] && lhs_u.c[2] == rhs_u.c[2] && lhs_u.c[msb] == rhs_u.c[msb]) &&
+                   ((lhs_u.c[lsb] > rhs_u.c[lsb]) ? lhs_u.c[lsb] - rhs_u.c[lsb] : rhs_u.c[lsb] - lhs_u.c[lsb]) <= ulps;
          }
 
          /**
@@ -384,28 +400,44 @@ namespace tpunit
           */
          static bool __fp_equal(double lhs, double rhs, unsigned char ulps)
          {
-            /**
-             * The C++ standard does not specify an 8-byte integer
-             * type, however, most compilers provide an extension
-             * using long long or other intrinsic type. The long
-             * long type will become part of the C++0x standard.
-             */
-            #ifdef _MSC_VER
-               typedef __int64 ll_type;
-            #else
-               typedef long long ll_type;
-            #endif
             union
             {
-               void* __static_assert[sizeof(double) == sizeof(ll_type) ? 1 : -1];
-               double  d;
-               ll_type ll;
+               double d;
+               char   c[8];
             } lhs_u, rhs_u;
             lhs_u.d = lhs;
             rhs_u.d = rhs;
-            lhs_u.ll = (lhs_u.ll < 0) ? -(~lhs_u.ll + 1) : lhs_u.ll;
-            rhs_u.ll = (rhs_u.ll < 0) ? -(~rhs_u.ll + 1) : rhs_u.ll;
-            return ((lhs_u.ll > rhs_u.ll) ? lhs_u.ll - rhs_u.ll : rhs_u.ll - lhs_u.ll) <= ulps;
+
+            bool lil_endian = ((unsigned char) 0x00FF) == 0xFF;
+            int msb = lil_endian ? 7 : 0;
+            int lsb = lil_endian ? 0 : 7;
+            if(lhs_u.c[msb] < 0)
+            {
+               lhs_u.c[0 ^ lsb] = 0x00 - lhs_u.c[0 ^ lsb];
+               lhs_u.c[1 ^ lsb] = (((unsigned char) lhs_u.c[0 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[1 ^ lsb];
+               lhs_u.c[2 ^ lsb] = (((unsigned char) lhs_u.c[1 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[2 ^ lsb];
+               lhs_u.c[3 ^ lsb] = (((unsigned char) lhs_u.c[2 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[3 ^ lsb];
+               lhs_u.c[4 ^ lsb] = (((unsigned char) lhs_u.c[3 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[4 ^ lsb];
+               lhs_u.c[5 ^ lsb] = (((unsigned char) lhs_u.c[4 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[5 ^ lsb];
+               lhs_u.c[6 ^ lsb] = (((unsigned char) lhs_u.c[5 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[6 ^ lsb];
+               lhs_u.c[7 ^ lsb] = (((unsigned char) lhs_u.c[6 ^ lsb] > 0x00) ? 0x7F : 0x80) - lhs_u.c[7 ^ lsb];
+            }
+            if(rhs_u.c[msb] < 0)
+            {
+               rhs_u.c[0 ^ lsb] = 0x00 - rhs_u.c[0 ^ lsb];
+               rhs_u.c[1 ^ lsb] = (((unsigned char) rhs_u.c[0 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[1 ^ lsb];
+               rhs_u.c[2 ^ lsb] = (((unsigned char) rhs_u.c[1 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[2 ^ lsb];
+               rhs_u.c[3 ^ lsb] = (((unsigned char) rhs_u.c[2 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[3 ^ lsb];
+               rhs_u.c[4 ^ lsb] = (((unsigned char) rhs_u.c[3 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[4 ^ lsb];
+               rhs_u.c[5 ^ lsb] = (((unsigned char) rhs_u.c[4 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[5 ^ lsb];
+               rhs_u.c[6 ^ lsb] = (((unsigned char) rhs_u.c[5 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[6 ^ lsb];
+               rhs_u.c[7 ^ lsb] = (((unsigned char) rhs_u.c[6 ^ lsb] > 0x00) ? 0x7F : 0x80) - rhs_u.c[7 ^ lsb];
+            }
+            return (lhs_u.c[1] == rhs_u.c[1] && lhs_u.c[2] == rhs_u.c[2] &&
+                    lhs_u.c[3] == rhs_u.c[3] && lhs_u.c[4] == rhs_u.c[4] &&
+                    lhs_u.c[5] == rhs_u.c[5] && lhs_u.c[6] == rhs_u.c[6] &&
+                    lhs_u.c[msb] == rhs_u.c[msb]) &&
+                   ((lhs_u.c[lsb] > rhs_u.c[lsb]) ? lhs_u.c[lsb] - rhs_u.c[lsb] : rhs_u.c[lsb] - lhs_u.c[lsb]) <= ulps;
          }
 
          static void __assert(const char* _file, int _line)
