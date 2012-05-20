@@ -37,10 +37,10 @@ extern "C" int printf(const char*, ...);
  * TPUNITPP_VERSION_MINOR is an integer of the minor version.
  * TPUNITPP_VERSION_PATCH is an integer of the patch version.
  */
-#define TPUNITPP_VERSION 1000002
+#define TPUNITPP_VERSION 1001000
 #define TPUNITPP_VERSION_MAJOR 1
-#define TPUNITPP_VERSION_MINOR 0
-#define TPUNITPP_VERSION_PATCH 2
+#define TPUNITPP_VERSION_MINOR 1
+#define TPUNITPP_VERSION_PATCH 0
 
 /**
  * ABORT(); generates a failure, immediately returning from the
@@ -141,6 +141,17 @@ extern "C" int printf(const char*, ...);
 #define BEFORE_CLASS(M) BeforeClass(&M, "BeforeClass: " #M)
 #define TEST(M)         Test(&M, #M)
 
+/**
+ * Try our best to detect compiler support for exception handling so
+ * we can catch and report any unhandled exceptions as normal failures.
+ */
+#ifndef TPUNITPP_HAS_EXCEPTIONS
+   #if defined(__EXCEPTIONS) || defined(_CPPUNWIND)
+      #include <exception>
+      #define TPUNITPP_HAS_EXCEPTIONS 1
+   #endif
+#endif
+
 namespace tpunit
 {
    /**
@@ -225,12 +236,14 @@ namespace tpunit
          {
             stats()
                : _assertions(0)
+               , _exceptions(0)
                , _failures(0)
                , _passes(0)
                , _traces(0)
                {}
 
             int _assertions;
+            int _exceptions;
             int _failures;
             int _passes;
             int _traces;
@@ -337,22 +350,19 @@ namespace tpunit
          static int __do_run()
          {
             fixture* f = __fixtures()._next;
-            while(f)
-            {
-               printf("[--------------]\n");
-               __do_methods(f->_before_classes);
-               __do_tests(f);
-               __do_methods(f->_after_classes);
-               printf("[--------------]\n\n");
-               f = f->_next;
-            }
-            printf("[==============]\n");
-            printf("[ TEST RESULTS ]\n");
-            printf("[==============]\n");
-            printf("[    PASSED    ] %4i tests\n", __stats()._passes);
-            printf("[    FAILED    ] %4i tests\n", __stats()._failures);
-            printf("[==============]\n");
-            return __stats()._failures;
+             while(f)
+             {
+                printf("[--------------]\n");
+                __do_methods(f->_before_classes);
+                __do_tests(f);
+                __do_methods(f->_after_classes);
+                printf("[--------------]\n\n");
+                f = f->_next;
+             }
+             printf("[==============]\n");
+             printf("[ TEST RESULTS ] Passed: %i, Failed: %i\n", __stats()._passes, __stats()._failures);
+             printf("[==============]\n");
+             return __stats()._failures;
          }
 
          /**
@@ -441,18 +451,34 @@ namespace tpunit
          }
 
          static void __assert(const char* _file, int _line)
-            { printf("[              ]    assert #%i at %s:%i\n", ++__stats()._assertions, _file, _line); }
+            { printf("[              ]    assertion #%i at %s:%i\n", ++__stats()._assertions, _file, _line); }
+
+         static void __exception(const char* _message)
+            { printf("[              ]    exception #%i cause: %s\n", ++__stats()._exceptions, _message); }
 
          static void __trace(const char* _file, int _line, const char* _message)
             { printf("[              ]    trace #%i at %s:%i: %s\n", ++__stats()._traces, _file, _line, _message); }
 
       private:
 
+         #ifdef TPUNITPP_HAS_EXCEPTIONS
+            #define __TPUNITPP_TRY      try
+            #define __TPUNITPP_CATCH(E) catch(E)
+         #else
+            #define __TPUNITPP_TRY      if(true)
+            #define __TPUNITPP_CATCH(E) if(false)
+         #endif
+
          static void __do_methods(method* m)
          {
             while(m)
             {
-               (*m->_this.*m->_addr)();
+               __TPUNITPP_TRY
+                  { (*m->_this.*m->_addr)(); }
+               __TPUNITPP_CATCH(const std::exception& e)
+                  { __exception(e.what()); }
+               __TPUNITPP_CATCH(...)
+                  { __exception("caught unknown exception type"); }
                m = m->_next;
             }
          }
@@ -465,9 +491,16 @@ namespace tpunit
                __do_methods(f->_befores);
 
                int _prev_assertions = __stats()._assertions;
+               int _prev_exceptions = __stats()._exceptions;
                printf("[ RUN          ] %s\n", t->_name);
-               (*t->_this.*t->_addr)();
-               if(_prev_assertions == __stats()._assertions)
+               __TPUNITPP_TRY
+                  { (*t->_this.*t->_addr)(); }
+               __TPUNITPP_CATCH(const std::exception& e)
+                  { __exception(e.what()); }
+               __TPUNITPP_CATCH(...)
+                  { __exception("caught unknown exception type"); }
+               if(_prev_assertions == __stats()._assertions &&
+                  _prev_exceptions == __stats()._exceptions)
                {
                   printf("[       PASSED ] %s\n", t->_name);
                   __stats()._passes++;
@@ -499,7 +532,7 @@ namespace tpunit
    /**
     * A class containing the primary entry point for running all registered
     * tpunit++ test cases. Generally this class is wrapped by the user's
-    * \em main function.
+    * main function.
     */
    class Tests : private TestFixture
    {
