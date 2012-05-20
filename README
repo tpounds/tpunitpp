@@ -52,9 +52,11 @@ object files that do not include illegal characters.
 | 4.0.4           | <default>, -fno-exceptions | works  |
 | 4.1.2           | <default>, -fno-exceptions | works  |
 | 4.2.4           | <default>, -fno-exceptions | works  |
-| 4.3.5           | <default>, -fno-exceptions | works  |
-| 4.4.5           | <default>, -fno-exceptions | works  |
-| 4.5.1           | <default>, -fno-exceptions | works  |
+| 4.3.6           | <default>, -fno-exceptions | works  |
+| 4.4.7           | <default>, -fno-exceptions | works  |
+| 4.5.3           | <default>, -fno-exceptions | works  |
+| 4.6.3           | <default>, -fno-exceptions | works  |
+| 4.7.0           | <default>, -fno-exceptions | works  |
 |-----------------|----------------------------|--------|
 | MSVC++ (http://www.microsoft.com)                     |
 |-------------------------------------------------------|
@@ -88,6 +90,7 @@ object files that do not include illegal characters.
 | 2.7             | <default>, -fno-exceptions | works  |
 | 2.8             | <default>, -fno-exceptions | works  |
 | 2.9             | <default>, -fno-exceptions | works  |
+| 3.0             | <default>, -fno-exceptions | works  |
 |-------------------------------------------------------|
 | Digital Mars C++ (http://www.digitalmars.com/)        |
 |-------------------------------------------------------|
