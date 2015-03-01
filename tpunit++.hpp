@@ -464,9 +464,11 @@ namespace tpunit
          #ifdef TPUNITPP_HAS_EXCEPTIONS
             #define __TPUNITPP_TRY      try
             #define __TPUNITPP_CATCH(E) catch(E)
+            #define __TPUNITPP_CAUSE(W) __exception(W)
          #else
             #define __TPUNITPP_TRY      if(true)
             #define __TPUNITPP_CATCH(E) if(false)
+            #define __TPUNITPP_CAUSE(W)
          #endif
 
          static void __do_methods(method* m)
@@ -476,9 +478,9 @@ namespace tpunit
                __TPUNITPP_TRY
                   { (*m->_this.*m->_addr)(); }
                __TPUNITPP_CATCH(const std::exception& e)
-                  { __exception(e.what()); }
+                  { __TPUNITPP_CAUSE(e.what()); }
                __TPUNITPP_CATCH(...)
-                  { __exception("caught unknown exception type"); }
+                  { __TPUNITPP_CAUSE("caught unknown exception type"); }
                m = m->_next;
             }
          }
@@ -496,9 +498,9 @@ namespace tpunit
                __TPUNITPP_TRY
                   { (*t->_this.*t->_addr)(); }
                __TPUNITPP_CATCH(const std::exception& e)
-                  { __exception(e.what()); }
+                  { __TPUNITPP_CAUSE(e.what()); }
                __TPUNITPP_CATCH(...)
-                  { __exception("caught unknown exception type"); }
+                  { __TPUNITPP_CAUSE("caught unknown exception type"); }
                if(_prev_assertions == __stats()._assertions &&
                   _prev_exceptions == __stats()._exceptions)
                {
