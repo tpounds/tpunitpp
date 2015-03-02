@@ -152,44 +152,41 @@ extern "C" int printf(const char*, ...);
    #endif
 #endif
 
-namespace tpunit
-{
+namespace tpunit {
    /**
     * The primary class that provides the integration point for creating user
     * defined test cases. To get started one only needs to derive from TestFixture,
     * define a few test methods and register them with the base constructor.
     */
-   class TestFixture
-   {
+   class TestFixture {
       private:
 
          /**
           * An internal class representing a TestFixture class.
           */
-         struct method
-         {
+         struct method {
             method(TestFixture* obj, void (TestFixture::*addr)(), const char* name, unsigned char type)
                : _this(obj)
                , _addr(addr)
                , _name()
                , _type(type)
-               , _next(0)
-            {
+               , _next(0) {
                char* dest = _name;
-               while(name && *name != 0)
-                  { *dest++ = *name++; }
+               while(name && *name != 0) {
+                  *dest++ = *name++;
+               }
                dest = 0;
             }
 
-            ~method()
-               { delete _next; }
+            ~method() {
+               delete _next;
+            }
 
             TestFixture* _this;
             void (TestFixture::*_addr)();
             char _name[256];
 
-            enum
-            {
+            enum {
                AFTER_METHOD,  AFTER_CLASS_METHOD,
                BEFORE_METHOD, BEFORE_CLASS_METHOD,
                TEST_METHOD
@@ -202,16 +199,14 @@ namespace tpunit
          /**
           * An internal class representing a TestFixture class.
           */
-         struct fixture
-         {
+         struct fixture {
             fixture()
                : _afters(0),  _after_classes(0) 
                , _befores(0), _before_classes(0) 
                , _tests(0),   _next(0)
                {}
 
-            ~fixture()
-            {
+            ~fixture() {
                delete _afters;
                delete _after_classes;
                delete _befores;
@@ -232,8 +227,7 @@ namespace tpunit
          /**
           * A struct holding test statistics. 
           */
-         struct stats
-         {
+         struct stats {
             stats()
                : _assertions(0)
                , _exceptions(0)
@@ -261,25 +255,26 @@ namespace tpunit
                      method* m10 = 0, method* m11 = 0, method* m12 = 0, method* m13 = 0, method* m14 = 0,
                      method* m15 = 0, method* m16 = 0, method* m17 = 0, method* m18 = 0, method* m19 = 0,
                      method* m20 = 0, method* m21 = 0, method* m22 = 0, method* m23 = 0, method* m24 = 0,
-                     method* m25 = 0, method* m26 = 0, method* m27 = 0, method* m28 = 0, method* m29 = 0)
-         {
+                     method* m25 = 0, method* m26 = 0, method* m27 = 0, method* m28 = 0, method* m29 = 0) {
             fixture* f = &__fixtures();
-            while(f->_next) { f = f->_next; }
+            while(f->_next) {
+               f = f->_next;
+            }
             f = f->_next = new fixture;
 
             #define SET_FIXTURE_METHOD(M) \
-               if(M) \
-               { \
+               if(M) { \
                   method** m = 0; \
-                  switch(M->_type) \
-                  { \
+                  switch(M->_type) { \
                      case method::AFTER_METHOD:        m = &f->_afters;         break; \
                      case method::AFTER_CLASS_METHOD:  m = &f->_after_classes;  break; \
                      case method::BEFORE_METHOD:       m = &f->_befores;        break; \
                      case method::BEFORE_CLASS_METHOD: m = &f->_before_classes; break; \
                      case method::TEST_METHOD:         m = &f->_tests;          break; \
                   } \
-                  while(*m && (*m)->_next) { m = &(*m)->_next; } \
+                  while(*m && (*m)->_next) { \
+                     m = &(*m)->_next; \
+                  } \
                   (*m) ? (*m)->_next = M : *m = M; \
                }
             SET_FIXTURE_METHOD(m0)  SET_FIXTURE_METHOD(m1)  SET_FIXTURE_METHOD(m2)  SET_FIXTURE_METHOD(m3)
@@ -300,8 +295,9 @@ namespace tpunit
           * @param[in] _name The internal name of the method used when status messages are displayed.
           */
          template <typename C>
-         method* After(void (C::*_method)(), const char* _name)
-            { return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::AFTER_METHOD); }
+         method* After(void (C::*_method)(), const char* _name) {
+            return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::AFTER_METHOD);
+         }
 
          /**
           * Registers a method to run once immediately after all after/before/test methods registered with
@@ -311,8 +307,9 @@ namespace tpunit
           * @param[in] _name The internal name of the method used when status messages are displayed.
           */
          template <typename C>
-         method* AfterClass(void (C::*_method)(), const char* _name)
-            { return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::AFTER_CLASS_METHOD); }
+         method* AfterClass(void (C::*_method)(), const char* _name) {
+            return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::AFTER_CLASS_METHOD);
+         }
 
          /**
           * Registers a method to run once immediately before each test method registered with the test fixture.
@@ -321,8 +318,9 @@ namespace tpunit
           * @param[in] _name The internal name of the method used when status messages are displayed.
           */
          template <typename C>
-         method* Before(void (C::*_method)(), const char* _name)
-            { return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::BEFORE_METHOD); }
+         method* Before(void (C::*_method)(), const char* _name) {
+            return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::BEFORE_METHOD);
+         }
 
          /**
           * Registers a method to run once immediately before all after/before/test methods registered with
@@ -332,8 +330,9 @@ namespace tpunit
           * @param[in] _name The internal name of the method used when status messages are displayed.
           */
          template <typename C>
-         method* BeforeClass(void (C::*_method)(), const char* _name)
-            { return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::BEFORE_CLASS_METHOD); }
+         method* BeforeClass(void (C::*_method)(), const char* _name) {
+            return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::BEFORE_CLASS_METHOD);
+         }
 
          /**
           * Registers a method to run as a test with the test fixture.
@@ -342,16 +341,15 @@ namespace tpunit
           * @param[in] _name The internal name of the method used when status messages are displayed.
           */
          template <typename C>
-         method* Test(void (C::*_method)(), const char* _name)
-            { return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::TEST_METHOD); }
+         method* Test(void (C::*_method)(), const char* _name) {
+            return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::TEST_METHOD);
+         }
 
       protected:
 
-         static int __do_run()
-         {
+         static int __do_run() {
             fixture* f = __fixtures()._next;
-             while(f)
-             {
+             while(f) {
                 printf("[--------------]\n");
                 __do_methods(f->_before_classes);
                 __do_tests(f);
@@ -371,10 +369,8 @@ namespace tpunit
           *
           * http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm 
           */
-         static bool __fp_equal(float lhs, float rhs, unsigned char ulps)
-         {
-            union
-            {
+         static bool __fp_equal(float lhs, float rhs, unsigned char ulps) {
+            union {
                float f;
                char  c[4];
             } lhs_u, rhs_u;
@@ -384,15 +380,13 @@ namespace tpunit
             bool lil_endian = ((unsigned char) 0x00FF) == 0xFF;
             int msb = lil_endian ? 3 : 0;
             int lsb = lil_endian ? 0 : 3;
-            if(lhs_u.c[msb] < 0)
-            {
+            if(lhs_u.c[msb] < 0) {
                lhs_u.c[0 ^ lsb] = 0x00 - lhs_u.c[0 ^ lsb];
                lhs_u.c[1 ^ lsb] = (((unsigned char) lhs_u.c[0 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[1 ^ lsb];
                lhs_u.c[2 ^ lsb] = (((unsigned char) lhs_u.c[1 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[2 ^ lsb];
                lhs_u.c[3 ^ lsb] = (((unsigned char) lhs_u.c[2 ^ lsb] > 0x00) ? 0x7F : 0x80) - lhs_u.c[3 ^ lsb];
             }
-            if(rhs_u.c[msb] < 0)
-            {
+            if(rhs_u.c[msb] < 0) {
                rhs_u.c[0 ^ lsb] = 0x00 - rhs_u.c[0 ^ lsb];
                rhs_u.c[1 ^ lsb] = (((unsigned char) rhs_u.c[0 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[1 ^ lsb];
                rhs_u.c[2 ^ lsb] = (((unsigned char) rhs_u.c[1 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[2 ^ lsb];
@@ -408,10 +402,8 @@ namespace tpunit
           *
           * http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm 
           */
-         static bool __fp_equal(double lhs, double rhs, unsigned char ulps)
-         {
-            union
-            {
+         static bool __fp_equal(double lhs, double rhs, unsigned char ulps) {
+            union {
                double d;
                char   c[8];
             } lhs_u, rhs_u;
@@ -421,8 +413,7 @@ namespace tpunit
             bool lil_endian = ((unsigned char) 0x00FF) == 0xFF;
             int msb = lil_endian ? 7 : 0;
             int lsb = lil_endian ? 0 : 7;
-            if(lhs_u.c[msb] < 0)
-            {
+            if(lhs_u.c[msb] < 0) {
                lhs_u.c[0 ^ lsb] = 0x00 - lhs_u.c[0 ^ lsb];
                lhs_u.c[1 ^ lsb] = (((unsigned char) lhs_u.c[0 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[1 ^ lsb];
                lhs_u.c[2 ^ lsb] = (((unsigned char) lhs_u.c[1 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[2 ^ lsb];
@@ -432,8 +423,7 @@ namespace tpunit
                lhs_u.c[6 ^ lsb] = (((unsigned char) lhs_u.c[5 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[6 ^ lsb];
                lhs_u.c[7 ^ lsb] = (((unsigned char) lhs_u.c[6 ^ lsb] > 0x00) ? 0x7F : 0x80) - lhs_u.c[7 ^ lsb];
             }
-            if(rhs_u.c[msb] < 0)
-            {
+            if(rhs_u.c[msb] < 0) {
                rhs_u.c[0 ^ lsb] = 0x00 - rhs_u.c[0 ^ lsb];
                rhs_u.c[1 ^ lsb] = (((unsigned char) rhs_u.c[0 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[1 ^ lsb];
                rhs_u.c[2 ^ lsb] = (((unsigned char) rhs_u.c[1 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[2 ^ lsb];
@@ -450,14 +440,17 @@ namespace tpunit
                    ((lhs_u.c[lsb] > rhs_u.c[lsb]) ? lhs_u.c[lsb] - rhs_u.c[lsb] : rhs_u.c[lsb] - lhs_u.c[lsb]) <= ulps;
          }
 
-         static void __assert(const char* _file, int _line)
-            { printf("[              ]    assertion #%i at %s:%i\n", ++__stats()._assertions, _file, _line); }
+         static void __assert(const char* _file, int _line) {
+            printf("[              ]    assertion #%i at %s:%i\n", ++__stats()._assertions, _file, _line);
+         }
 
-         static void __exception(const char* _message)
-            { printf("[              ]    exception #%i cause: %s\n", ++__stats()._exceptions, _message); }
+         static void __exception(const char* _message) {
+            printf("[              ]    exception #%i cause: %s\n", ++__stats()._exceptions, _message);
+         }
 
-         static void __trace(const char* _file, int _line, const char* _message)
-            { printf("[              ]    trace #%i at %s:%i: %s\n", ++__stats()._traces, _file, _line, _message); }
+         static void __trace(const char* _file, int _line, const char* _message) {
+            printf("[              ]    trace #%i at %s:%i: %s\n", ++__stats()._traces, _file, _line, _message);
+         }
 
       private:
 
@@ -471,44 +464,39 @@ namespace tpunit
             #define __TPUNITPP_CAUSE(W)
          #endif
 
-         static void __do_methods(method* m)
-         {
-            while(m)
-            {
-               __TPUNITPP_TRY
-                  { (*m->_this.*m->_addr)(); }
-               __TPUNITPP_CATCH(const std::exception& e)
-                  { __TPUNITPP_CAUSE(e.what()); }
-               __TPUNITPP_CATCH(...)
-                  { __TPUNITPP_CAUSE("caught unknown exception type"); }
+         static void __do_methods(method* m) {
+            while(m) {
+               __TPUNITPP_TRY {
+                  (*m->_this.*m->_addr)();
+               } __TPUNITPP_CATCH(const std::exception& e) {
+                  __TPUNITPP_CAUSE(e.what());
+               } __TPUNITPP_CATCH(...) {
+                  __TPUNITPP_CAUSE("caught unknown exception type");
+               }
                m = m->_next;
             }
          }
 
-         static void __do_tests(fixture* f)
-         {
+         static void __do_tests(fixture* f) {
             method* t = f->_tests;
-            while(t)
-            {
+            while(t) {
                __do_methods(f->_befores);
 
                int _prev_assertions = __stats()._assertions;
                int _prev_exceptions = __stats()._exceptions;
                printf("[ RUN          ] %s\n", t->_name);
-               __TPUNITPP_TRY
-                  { (*t->_this.*t->_addr)(); }
-               __TPUNITPP_CATCH(const std::exception& e)
-                  { __TPUNITPP_CAUSE(e.what()); }
-               __TPUNITPP_CATCH(...)
-                  { __TPUNITPP_CAUSE("caught unknown exception type"); }
+               __TPUNITPP_TRY {
+                  (*t->_this.*t->_addr)();
+               } __TPUNITPP_CATCH(const std::exception& e) {
+                  __TPUNITPP_CAUSE(e.what());
+               } __TPUNITPP_CATCH(...) {
+                  __TPUNITPP_CAUSE("caught unknown exception type");
+               }
                if(_prev_assertions == __stats()._assertions &&
-                  _prev_exceptions == __stats()._exceptions)
-               {
+                  _prev_exceptions == __stats()._exceptions) {
                   printf("[       PASSED ] %s\n", t->_name);
                   __stats()._passes++;
-               }
-               else
-               {
+               } else {
                   printf("[       FAILED ] %s\n", t->_name);
                   __stats()._failures++;
                }
@@ -518,14 +506,12 @@ namespace tpunit
             }
          }
 
-         static stats& __stats()
-         {
+         static stats& __stats() {
             static stats _stats;
             return _stats;
          }
 
-         static fixture& __fixtures()
-         {
+         static fixture& __fixtures() {
             static fixture _fixtures;
             return _fixtures;
          }
