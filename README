@@ -15,12 +15,13 @@ a custom user-defined main method.
 
 Tested Compilers
 ================
-tpunit++ has been tested on several compiler vendors and releases, however,
-I have not exhaustively tested it against everything out there.  That said,
-I do not forsee any complications getting this library to work with any
-compiler supporting basic C++ features and a minimal libc implementation.
-If you do happen to run into problems on a compiler I have not tested against,
-please create a ticket on the issue tracker so it can be fixed.
+tpunit++ has been exhaustively tested on several popular compiler versions,
+however, it has not been tested with everything (e.g. PGI, SunPro, etc.). The
+following compatibility information is provided as a representative sample of
+compiler versions that the vanilla library is expected to work with out of the
+box.
+
+Notes:
 
 Some compilers have issues using the fully qualified class with namespace
 syntax (e.g. ns::class). Try the 'using' directive to workaround the issue.
@@ -28,10 +29,10 @@ syntax (e.g. ns::class). Try the 'using' directive to workaround the issue.
 e.g.  using namesapce tpunit;
       using tpunit::TestFixture;
 
-The primary issue preventing tpunit++ from working with a compiler is a
-lack of member function template specialization. This feature is required
-to support tpunit++'s registration methods (e.g. After, Before, Test). In
-general, tpunit++ should work with any compiler supporting this capability.
+The primary issue preventing tpunit++ from working with a compiler is a lack
+of member function template specialization. This feature is required to support
+tpunit++'s registration methods (e.g. After, Before, Test). It is expected that
+tpunit++ will work with any compiler supporting this functionality.
 
 Additionally, some linkers do not work with file names that contain non-
 alphanumeric characters (e.g. tpunit++main.cpp). Try renaming these files
