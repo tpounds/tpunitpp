@@ -34,6 +34,7 @@ struct TPUnitPPTest : tpunit::TestFixture {
       TEST(TPUnitPPTest::test), TEST(TPUnitPPTest::test),
       TEST(TPUnitPPTest::test_invocations),
       TEST(TPUnitPPTest::test_macros),
+      TEST(TPUnitPPTest::test_matchers),
       AFTER(TPUnitPPTest::after),
       AFTER_CLASS(TPUnitPPTest::after_class)
    )
@@ -81,5 +82,23 @@ struct TPUnitPPTest : tpunit::TestFixture {
          ASSERT_NO_THROW(__dummy = 1);     EXPECT_NO_THROW(__dummy = 1);
          ASSERT_ANY_THROW(throw __dummy);  EXPECT_ANY_THROW(throw __dummy);
       #endif
+   }
+
+   struct AlwaysMatches {
+      template <typename T>
+      bool matches(T obj) { return true; }
+   };
+
+   struct NeverMatches {
+      template <typename T>
+      bool matches(T) { return false; }
+   };
+
+   void test_matchers() {
+      ASSERT_THAT(true, AlwaysMatches());
+      EXPECT_THAT(1234, AlwaysMatches());
+
+      ASSERT_THAT("TEST", !NeverMatches());
+      EXPECT_THAT(3.141f, !NeverMatches());
    }
 } __TPUnitPPTest;

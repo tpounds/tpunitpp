@@ -120,6 +120,30 @@ extern "C" int printf(const char*, ...);
 #define EXPECT_ANY_THROW(statement) try { statement; FAIL(); } catch(...) { PASS(); }
 
 /**
+ * A macro that can be used to check whether an input matches acceptable
+ * values. A matcher implementation is a simple type containing a single
+ * boolean function that is applied to the input. The match is considered
+ * successful if the function returns true and unsuccessful if it returns
+ * false.
+ *
+ * e.g.
+ *
+ *    struct AlwaysMatches {
+ *       template <typename T>
+ *       bool matches(T) { return true; }
+ *    };
+ *
+ *    struct NeverMatches {
+ *       template <typename T>
+ *       bool matches(T) { return false; }
+ *    };
+ *
+ * ASSERT|EXPECT_THAT(obj, matcher); fail if the matcher evaluates to false.
+ */
+#define ASSERT_THAT(obj, matcher) if(matcher.matches(obj)) { PASS(); } else { ABORT(); }
+#define EXPECT_THAT(obj, matcher) if(matcher.matches(obj)) { PASS(); } else { FAIL(); }
+
+/**
  * The set of convenience macros for registering functions with the test
  * fixture.
  *
