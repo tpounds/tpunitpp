@@ -199,7 +199,7 @@ namespace tpunit {
                while(name && *name != 0) {
                   *dest++ = *name++;
                }
-               dest = 0;
+               *dest = 0;
             }
 
             ~method() {
