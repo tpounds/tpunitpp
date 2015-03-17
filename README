@@ -57,8 +57,8 @@ object files that do not include illegal characters.
 | 4.4.7           | <default>, -fno-exceptions | works  |
 | 4.5.3           | <default>, -fno-exceptions | works  |
 | 4.6.3           | <default>, -fno-exceptions | works  |
-| 4.7.0           | <default>, -fno-exceptions | works  |
-| 4.8.2           | <default>, -fno-exceptions | works  |
+| 4.7.4           | <default>, -fno-exceptions | works  |
+| 4.8.4           | <default>, -fno-exceptions | works  |
 | 4.9.2           | <default>, -fno-exceptions | works  |
 |-----------------|----------------------------|--------|
 | MSVC++ (http://www.microsoft.com)                     |
