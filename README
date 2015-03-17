@@ -69,6 +69,8 @@ object files that do not include illegal characters.
 | 2005 (8.0)      | <default>, /EHsc           | works  |
 | 2008 (9.0)      | <default>, /EHsc           | works  |
 | 2010 (10.0)     | <default>, /EHsc           | works  |
+| 2012 (11.0)     | <default>, /EHsc           | works  |
+| 2013 (12.0)     | <default>, /EHsc           | works  |
 |-----------------|----------------------------|--------|
 | Borland C++ (http://www.borland.com)                  |
 |-------------------------------------------------------|
