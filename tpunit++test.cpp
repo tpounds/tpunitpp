@@ -86,7 +86,7 @@ struct TPUnitPPTest : tpunit::TestFixture {
 
    struct AlwaysMatches {
       template <typename T>
-      bool matches(T obj) { return true; }
+      bool matches(T) { return true; }
    };
 
    struct NeverMatches {
