@@ -326,7 +326,7 @@ namespace tpunit {
           */
          template <typename C>
          method* After(void (C::*_method)(), const char* _name) {
-            return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::AFTER_METHOD);
+            return new method(this, static_cast<void (TestFixture::*)()>(_method), _name, method::AFTER_METHOD);
          }
 
          /**
@@ -338,7 +338,7 @@ namespace tpunit {
           */
          template <typename C>
          method* AfterClass(void (C::*_method)(), const char* _name) {
-            return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::AFTER_CLASS_METHOD);
+            return new method(this, static_cast<void (TestFixture::*)()>(_method), _name, method::AFTER_CLASS_METHOD);
          }
 
          /**
@@ -349,7 +349,7 @@ namespace tpunit {
           */
          template <typename C>
          method* Before(void (C::*_method)(), const char* _name) {
-            return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::BEFORE_METHOD);
+            return new method(this, static_cast<void (TestFixture::*)()>(_method), _name, method::BEFORE_METHOD);
          }
 
          /**
@@ -361,7 +361,7 @@ namespace tpunit {
           */
          template <typename C>
          method* BeforeClass(void (C::*_method)(), const char* _name) {
-            return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::BEFORE_CLASS_METHOD);
+            return new method(this, static_cast<void (TestFixture::*)()>(_method), _name, method::BEFORE_CLASS_METHOD);
          }
 
          /**
@@ -372,7 +372,7 @@ namespace tpunit {
           */
          template <typename C>
          method* Test(void (C::*_method)(), const char* _name) {
-            return new method(this, reinterpret_cast<void (TestFixture::*)()>(_method), _name, method::TEST_METHOD);
+            return new method(this, static_cast<void (TestFixture::*)()>(_method), _name, method::TEST_METHOD);
          }
 
       protected:
