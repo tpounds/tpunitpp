@@ -290,32 +290,28 @@ namespace tpunit {
             }
             f = f->_next = new fixture;
 
-            #define SET_FIXTURE_METHOD(M) \
-               if(M) { \
-                  method** m = 0; \
-                  switch(M->_type) { \
-                     case method::AFTER_METHOD:        m = &f->_afters;         break; \
-                     case method::AFTER_CLASS_METHOD:  m = &f->_after_classes;  break; \
-                     case method::BEFORE_METHOD:       m = &f->_befores;        break; \
-                     case method::BEFORE_CLASS_METHOD: m = &f->_before_classes; break; \
-                     case method::TEST_METHOD:         m = &f->_tests;          break; \
-                  } \
-                  while(*m && (*m)->_next) { \
-                     m = &(*m)->_next; \
-                  } \
-                  (*m) ? (*m)->_next = M : *m = M; \
+            method* methods[50] = { m0,  m1,  m2,  m3,  m4,  m5,  m6,  m7,  m8,  m9,
+                                    m10, m11, m12, m13, m14, m15, m16, m17, m18, m19,
+                                    m20, m21, m22, m23, m24, m25, m26, m27, m28, m29,
+                                    m30, m31, m32, m33, m34, m35, m36, m37, m38, m39,
+                                    m40, m41, m42, m43, m44, m45, m46, m47, m48, m49 };
+
+            for(int i = 0; i < 50; i++) {
+               if(methods[i]) {
+                  method** m = 0;
+                  switch(methods[i]->_type) {
+                     case method::AFTER_METHOD:        m = &f->_afters;         break;
+                     case method::AFTER_CLASS_METHOD:  m = &f->_after_classes;  break;
+                     case method::BEFORE_METHOD:       m = &f->_befores;        break;
+                     case method::BEFORE_CLASS_METHOD: m = &f->_before_classes; break;
+                     case method::TEST_METHOD:         m = &f->_tests;          break;
+                  }
+                  while(*m && (*m)->_next) {
+                     m = &(*m)->_next;
+                  }
+                  (*m) ? (*m)->_next = methods[i] : *m = methods[i];
                }
-            SET_FIXTURE_METHOD(m0)  SET_FIXTURE_METHOD(m1)  SET_FIXTURE_METHOD(m2)  SET_FIXTURE_METHOD(m3)  SET_FIXTURE_METHOD(m4)
-            SET_FIXTURE_METHOD(m5)  SET_FIXTURE_METHOD(m6)  SET_FIXTURE_METHOD(m7)  SET_FIXTURE_METHOD(m8)  SET_FIXTURE_METHOD(m9)
-            SET_FIXTURE_METHOD(m10) SET_FIXTURE_METHOD(m11) SET_FIXTURE_METHOD(m12) SET_FIXTURE_METHOD(m13) SET_FIXTURE_METHOD(m14)
-            SET_FIXTURE_METHOD(m15) SET_FIXTURE_METHOD(m16) SET_FIXTURE_METHOD(m17) SET_FIXTURE_METHOD(m18) SET_FIXTURE_METHOD(m19)
-            SET_FIXTURE_METHOD(m20) SET_FIXTURE_METHOD(m21) SET_FIXTURE_METHOD(m22) SET_FIXTURE_METHOD(m23) SET_FIXTURE_METHOD(m24)
-            SET_FIXTURE_METHOD(m25) SET_FIXTURE_METHOD(m26) SET_FIXTURE_METHOD(m27) SET_FIXTURE_METHOD(m28) SET_FIXTURE_METHOD(m29)
-            SET_FIXTURE_METHOD(m30) SET_FIXTURE_METHOD(m31) SET_FIXTURE_METHOD(m32) SET_FIXTURE_METHOD(m33) SET_FIXTURE_METHOD(m34)
-            SET_FIXTURE_METHOD(m35) SET_FIXTURE_METHOD(m36) SET_FIXTURE_METHOD(m37) SET_FIXTURE_METHOD(m38) SET_FIXTURE_METHOD(m39)
-            SET_FIXTURE_METHOD(m40) SET_FIXTURE_METHOD(m41) SET_FIXTURE_METHOD(m42) SET_FIXTURE_METHOD(m43) SET_FIXTURE_METHOD(m44)
-            SET_FIXTURE_METHOD(m45) SET_FIXTURE_METHOD(m46) SET_FIXTURE_METHOD(m47) SET_FIXTURE_METHOD(m48) SET_FIXTURE_METHOD(m49)
-            #undef SET_FIXTURE_METHOD
+            }
          }
 
          /**
