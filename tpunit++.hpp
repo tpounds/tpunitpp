@@ -532,6 +532,10 @@ namespace tpunit {
             }
          }
 
+         #undef __TPUNITPP_TRY
+         #undef __TPUNITPP_CATCH
+         #undef __TPUNITPP_CAUSE
+
          static stats& __stats() {
             static stats _stats;
             return _stats;
