@@ -552,8 +552,7 @@ namespace tpunit {
     * tpunit++ test cases. Generally this class is wrapped by the user's
     * main function.
     */
-   class Tests : private TestFixture
-   {
+   class Tests : private TestFixture {
       public:
 
          /**
@@ -561,11 +560,15 @@ namespace tpunit {
           *
           * @return The number of failing assertions. (e.g. zero if all tests pass, otherwise non-zero)
           */
-         static int Run() { return TestFixture::__do_run(); }
+         static int Run() {
+            return TestFixture::__do_run();
+         }
 
       private:
 
-         Tests() : TestFixture(0) { /* disable instance creation */ }
+         Tests() : TestFixture(0) {
+            /* disabled */
+         }
    };
 } // namespace tpunit
 #endif //__TPUNITPP_HPP__
