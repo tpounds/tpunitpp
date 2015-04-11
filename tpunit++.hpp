@@ -490,15 +490,23 @@ namespace tpunit {
             #define __TPUNITPP_CAUSE(W)
          #endif
 
+         static void __do_method(method* m) {
+            __TPUNITPP_TRY {
+               (*m->_this.*m->_addr)();
+            } __TPUNITPP_CATCH(const std::exception& e) {
+               __TPUNITPP_CAUSE(e.what());
+            } __TPUNITPP_CATCH(...) {
+               __TPUNITPP_CAUSE("caught unknown exception type");
+            }
+         }
+
+         #undef __TPUNITPP_TRY
+         #undef __TPUNITPP_CATCH
+         #undef __TPUNITPP_CAUSE
+
          static void __do_methods(method* m) {
             while(m) {
-               __TPUNITPP_TRY {
-                  (*m->_this.*m->_addr)();
-               } __TPUNITPP_CATCH(const std::exception& e) {
-                  __TPUNITPP_CAUSE(e.what());
-               } __TPUNITPP_CATCH(...) {
-                  __TPUNITPP_CAUSE("caught unknown exception type");
-               }
+               __do_method(m);
                m = m->_next;
             }
          }
@@ -511,13 +519,7 @@ namespace tpunit {
                int _prev_assertions = __stats()._assertions;
                int _prev_exceptions = __stats()._exceptions;
                printf("[ RUN          ] %s\n", t->_name);
-               __TPUNITPP_TRY {
-                  (*t->_this.*t->_addr)();
-               } __TPUNITPP_CATCH(const std::exception& e) {
-                  __TPUNITPP_CAUSE(e.what());
-               } __TPUNITPP_CATCH(...) {
-                  __TPUNITPP_CAUSE("caught unknown exception type");
-               }
+               __do_method(t);
                if(_prev_assertions == __stats()._assertions &&
                   _prev_exceptions == __stats()._exceptions) {
                   printf("[       PASSED ] %s\n", t->_name);
@@ -531,10 +533,6 @@ namespace tpunit {
                __do_methods(f->_afters);
             }
          }
-
-         #undef __TPUNITPP_TRY
-         #undef __TPUNITPP_CATCH
-         #undef __TPUNITPP_CAUSE
 
          static stats& __stats() {
             static stats _stats;
