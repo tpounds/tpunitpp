@@ -560,7 +560,7 @@ namespace tpunit {
           *
           * @return The number of failing assertions. (e.g. zero if all tests pass, otherwise non-zero)
           */
-         static int Run() {
+         static int run() {
             return TestFixture::__do_run();
          }
 
