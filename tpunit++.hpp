@@ -220,34 +220,6 @@ namespace tpunit {
          };
 
          /**
-          * Internal class encapsulating all methods registered with a test fixture.
-          */
-         struct fixture {
-            fixture()
-               : _afters(0),  _after_classes(0) 
-               , _befores(0), _before_classes(0) 
-               , _tests(0),   _next(0)
-               {}
-
-            ~fixture() {
-               delete _afters;
-               delete _after_classes;
-               delete _befores;
-               delete _before_classes;
-               delete _tests;
-               delete _next;
-            }
-
-            method* _afters;
-            method* _after_classes;
-            method* _befores;
-            method* _before_classes;
-            method* _tests;
-
-            fixture* _next;
-         };
-
-         /**
           * Internal class encapsulating test statistics.
           */
          struct stats {
@@ -284,11 +256,15 @@ namespace tpunit {
                      method* m35 = 0, method* m36 = 0, method* m37 = 0, method* m38 = 0, method* m39 = 0,
                      method* m40 = 0, method* m41 = 0, method* m42 = 0, method* m43 = 0, method* m44 = 0,
                      method* m45 = 0, method* m46 = 0, method* m47 = 0, method* m48 = 0, method* m49 = 0) {
-            fixture* f = &__fixtures();
-            while(f->_next) {
-               f = f->_next;
+            TestFixture** f = __fixtures();
+            if (*f) {
+               while((*f)->_next) {
+                  f = &((*f)->_next);
+               }
+               (*f)->_next = this;
+            } else {
+               *f = this;
             }
-            f = f->_next = new fixture;
 
             method* methods[50] = { m0,  m1,  m2,  m3,  m4,  m5,  m6,  m7,  m8,  m9,
                                     m10, m11, m12, m13, m14, m15, m16, m17, m18, m19,
@@ -300,11 +276,11 @@ namespace tpunit {
                if(methods[i]) {
                   method** m = 0;
                   switch(methods[i]->_type) {
-                     case method::AFTER_METHOD:        m = &f->_afters;         break;
-                     case method::AFTER_CLASS_METHOD:  m = &f->_after_classes;  break;
-                     case method::BEFORE_METHOD:       m = &f->_befores;        break;
-                     case method::BEFORE_CLASS_METHOD: m = &f->_before_classes; break;
-                     case method::TEST_METHOD:         m = &f->_tests;          break;
+                     case method::AFTER_METHOD:        m = &_afters;         break;
+                     case method::AFTER_CLASS_METHOD:  m = &_after_classes;  break;
+                     case method::BEFORE_METHOD:       m = &_befores;        break;
+                     case method::BEFORE_CLASS_METHOD: m = &_before_classes; break;
+                     case method::TEST_METHOD:         m = &_tests;          break;
                   }
                   while(*m && (*m)->_next) {
                      m = &(*m)->_next;
@@ -312,6 +288,15 @@ namespace tpunit {
                   (*m) ? (*m)->_next = methods[i] : *m = methods[i];
                }
             }
+         }
+
+         ~TestFixture() {
+            delete _afters;
+            delete _after_classes;
+            delete _befores;
+            delete _before_classes;
+            delete _tests;
+            delete _next;
          }
 
          /**
@@ -372,7 +357,7 @@ namespace tpunit {
          }
 
          static int __do_run() {
-            fixture* f = __fixtures()._next;
+            TestFixture* f = *__fixtures();
              while(f) {
                 printf("[--------------]\n");
                 __do_methods(f->_before_classes);
@@ -511,7 +496,7 @@ namespace tpunit {
             }
          }
 
-         static void __do_tests(fixture* f) {
+         static void __do_tests(TestFixture* f) {
             method* t = f->_tests;
             while(t) {
                __do_methods(f->_befores);
@@ -539,10 +524,18 @@ namespace tpunit {
             return _stats;
          }
 
-         static fixture& __fixtures() {
-            static fixture _fixtures;
-            return _fixtures;
+         static TestFixture** __fixtures() {
+            static TestFixture* _fixtures = 0;
+            return &_fixtures;
          }
+
+         TestFixture* _next;
+
+         method* _afters;
+         method* _after_classes;
+         method* _befores;
+         method* _before_classes;
+         method* _tests;
    };
 
    /**
