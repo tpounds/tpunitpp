@@ -186,7 +186,7 @@ namespace tpunit {
       private:
 
          /**
-          * An internal class representing a TestFixture class.
+          * Internal class encapsulating a registered test method.
           */
          struct method {
             method(TestFixture* obj, void (TestFixture::*addr)(), const char* name, unsigned char type)
@@ -220,7 +220,7 @@ namespace tpunit {
          };
 
          /**
-          * An internal class representing a TestFixture class.
+          * Internal class encapsulating all methods registered with a test fixture.
           */
          struct fixture {
             fixture()
@@ -248,7 +248,7 @@ namespace tpunit {
          };
 
          /**
-          * A struct holding test statistics. 
+          * Internal class encapsulating test statistics.
           */
          struct stats {
             stats()
@@ -546,9 +546,7 @@ namespace tpunit {
    };
 
    /**
-    * A class containing the primary entry point for running all registered
-    * tpunit++ test cases. Generally this class is wrapped by the user's
-    * main function.
+    * Convenience class containing the entry point to run all registered tests.
     */
    struct Tests {
       /**
