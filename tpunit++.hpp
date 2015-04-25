@@ -371,8 +371,6 @@ namespace tpunit {
             return new method(this, static_cast<void (TestFixture::*)()>(_method), _name, method::TEST_METHOD);
          }
 
-      protected:
-
          static int __do_run() {
             fixture* f = __fixtures()._next;
              while(f) {
@@ -388,6 +386,8 @@ namespace tpunit {
              printf("[==============]\n");
              return __stats()._failures;
          }
+
+      protected:
 
          /**
           * Determine if two binary32 single precision IEEE 754 floating-point
@@ -550,23 +550,15 @@ namespace tpunit {
     * tpunit++ test cases. Generally this class is wrapped by the user's
     * main function.
     */
-   class Tests : private TestFixture {
-      public:
-
-         /**
-          * Run all of the registered test cases and return the number of failed assertions.
-          *
-          * @return The number of failing assertions. (e.g. zero if all tests pass, otherwise non-zero)
-          */
-         static int run() {
-            return TestFixture::__do_run();
-         }
-
-      private:
-
-         Tests() : TestFixture(0) {
-            /* disabled */
-         }
+   struct Tests {
+      /**
+       * Run all registered test cases and return the number of failed assertions.
+       *
+       * @return The number of failing assertions. (e.g. zero if all tests pass, otherwise non-zero)
+       */
+      static int run() {
+         return TestFixture::__do_run();
+      }
    };
 } // namespace tpunit
 #endif //__TPUNITPP_HPP__
