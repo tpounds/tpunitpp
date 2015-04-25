@@ -114,4 +114,5 @@ object files that do not include illegal characters.
 | 8.30.11n        | <default>, -Ae             | works  |
 | 8.40.2n         | <default>, -Ae             | works  |
 | 8.52.5n         | <default>, -Ae             | works  |
+| 8.57.0n         | <default>, -Ae             | works  |
 |-------------------------------------------------------|
