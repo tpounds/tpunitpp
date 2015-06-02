@@ -465,29 +465,19 @@ namespace tpunit {
 
       private:
 
-         #ifdef TPUNITPP_HAS_EXCEPTIONS
-            #define __TPUNITPP_TRY      try
-            #define __TPUNITPP_CATCH(E) catch(E)
-            #define __TPUNITPP_CAUSE(W) tpunit_detail_exception(W)
-         #else
-            #define __TPUNITPP_TRY      if(true)
-            #define __TPUNITPP_CATCH(E) if(false)
-            #define __TPUNITPP_CAUSE(W)
-         #endif
-
          static void tpunit_detail_do_method(method* m) {
-            __TPUNITPP_TRY {
+            #ifdef TPUNITPP_HAS_EXCEPTIONS
+            try {
+            #endif
                (*m->_this.*m->_addr)();
-            } __TPUNITPP_CATCH(const std::exception& e) {
-               __TPUNITPP_CAUSE(e.what());
-            } __TPUNITPP_CATCH(...) {
-               __TPUNITPP_CAUSE("caught unknown exception type");
+            #ifdef TPUNITPP_HAS_EXCEPTIONS
+            } catch(const std::exception& e) {
+               tpunit_detail_exception(e.what());
+            } catch(...) {
+               tpunit_detail_exception("caught unknown exception type");
             }
+            #endif
          }
-
-         #undef __TPUNITPP_TRY
-         #undef __TPUNITPP_CATCH
-         #undef __TPUNITPP_CAUSE
 
          static void tpunit_detail_do_methods(method* m) {
             while(m) {
