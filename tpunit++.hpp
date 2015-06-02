@@ -52,10 +52,10 @@ extern "C" int printf(const char*, ...);
  * TRACE(message); adds a trace to the test output with a user
  * specified string message.
  */
-#define ABORT() __tpunitassert(__FILE__, __LINE__); return;
-#define FAIL()  __tpunitassert(__FILE__, __LINE__);
+#define ABORT() tpunit_detail_assert(__FILE__, __LINE__); return;
+#define FAIL()  tpunit_detail_assert(__FILE__, __LINE__);
 #define PASS()  /* do nothing */
-#define TRACE(message) __trace(__FILE__, __LINE__, message);
+#define TRACE(message) tpunit_detail_trace(__FILE__, __LINE__, message);
 
 /**
  * The set of core macros for basic predicate testing of boolean
@@ -93,8 +93,8 @@ extern "C" int printf(const char*, ...);
  * ASSERT|EXPECT_FLOAT_NEAR(lhs, rhs, abs_error); generates a failure if
  * the given floating-point values exceed the absolute error.
  */
-#define ASSERT_FLOAT_EQUAL(lhs, rhs) if(__fp_equal(lhs, rhs, 4)) { PASS(); } else { ABORT(); }
-#define EXPECT_FLOAT_EQUAL(lhs, rhs) if(__fp_equal(lhs, rhs, 4)) { PASS(); } else { FAIL(); }
+#define ASSERT_FLOAT_EQUAL(lhs, rhs) if(tpunit_detail_fp_equal(lhs, rhs, 4)) { PASS(); } else { ABORT(); }
+#define EXPECT_FLOAT_EQUAL(lhs, rhs) if(tpunit_detail_fp_equal(lhs, rhs, 4)) { PASS(); } else { FAIL(); }
 #define ASSERT_FLOAT_NEAR(lhs, rhs, abs_error) if((((lhs) > (rhs)) ? (lhs) - (rhs) : (rhs) - (lhs)) <= (abs_error)) { PASS(); } else { ABORT(); }
 #define EXPECT_FLOAT_NEAR(lhs, rhs, abs_error) if((((lhs) > (rhs)) ? (lhs) - (rhs) : (rhs) - (lhs)) <= (abs_error)) { PASS(); } else { FAIL(); }
 
@@ -256,7 +256,7 @@ namespace tpunit {
                      method* m35 = 0, method* m36 = 0, method* m37 = 0, method* m38 = 0, method* m39 = 0,
                      method* m40 = 0, method* m41 = 0, method* m42 = 0, method* m43 = 0, method* m44 = 0,
                      method* m45 = 0, method* m46 = 0, method* m47 = 0, method* m48 = 0, method* m49 = 0) {
-            TestFixture** f = __fixtures();
+            TestFixture** f = tpunit_detail_fixtures();
             if (*f) {
                while((*f)->_next) {
                   f = &((*f)->_next);
@@ -356,20 +356,20 @@ namespace tpunit {
             return new method(this, static_cast<void (TestFixture::*)()>(_method), _name, method::TEST_METHOD);
          }
 
-         static int __do_run() {
-            TestFixture* f = *__fixtures();
+         static int tpunit_detail_do_run() {
+            TestFixture* f = *tpunit_detail_fixtures();
              while(f) {
                 printf("[--------------]\n");
-                __do_methods(f->_before_classes);
-                __do_tests(f);
-                __do_methods(f->_after_classes);
+                tpunit_detail_do_methods(f->_before_classes);
+                tpunit_detail_do_tests(f);
+                tpunit_detail_do_methods(f->_after_classes);
                 printf("[--------------]\n\n");
                 f = f->_next;
              }
              printf("[==============]\n");
-             printf("[ TEST RESULTS ] Passed: %i, Failed: %i\n", __stats()._passes, __stats()._failures);
+             printf("[ TEST RESULTS ] Passed: %i, Failed: %i\n", tpunit_detail_stats()._passes, tpunit_detail_stats()._failures);
              printf("[==============]\n");
-             return __stats()._failures;
+             return tpunit_detail_stats()._failures;
          }
 
       protected:
@@ -380,7 +380,7 @@ namespace tpunit {
           *
           * http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm 
           */
-         static bool __fp_equal(float lhs, float rhs, unsigned char ulps) {
+         static bool tpunit_detail_fp_equal(float lhs, float rhs, unsigned char ulps) {
             union {
                float f;
                char  c[4];
@@ -413,7 +413,7 @@ namespace tpunit {
           *
           * http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm 
           */
-         static bool __fp_equal(double lhs, double rhs, unsigned char ulps) {
+         static bool tpunit_detail_fp_equal(double lhs, double rhs, unsigned char ulps) {
             union {
                double d;
                char   c[8];
@@ -451,16 +451,16 @@ namespace tpunit {
                    ((lhs_u.c[lsb] > rhs_u.c[lsb]) ? lhs_u.c[lsb] - rhs_u.c[lsb] : rhs_u.c[lsb] - lhs_u.c[lsb]) <= ulps;
          }
 
-         static void __tpunitassert(const char* _file, int _line) {
-            printf("[              ]    assertion #%i at %s:%i\n", ++__stats()._assertions, _file, _line);
+         static void tpunit_detail_assert(const char* _file, int _line) {
+            printf("[              ]    assertion #%i at %s:%i\n", ++tpunit_detail_stats()._assertions, _file, _line);
          }
 
-         static void __exception(const char* _message) {
-            printf("[              ]    exception #%i cause: %s\n", ++__stats()._exceptions, _message);
+         static void tpunit_detail_exception(const char* _message) {
+            printf("[              ]    exception #%i cause: %s\n", ++tpunit_detail_stats()._exceptions, _message);
          }
 
-         static void __trace(const char* _file, int _line, const char* _message) {
-            printf("[              ]    trace #%i at %s:%i: %s\n", ++__stats()._traces, _file, _line, _message);
+         static void tpunit_detail_trace(const char* _file, int _line, const char* _message) {
+            printf("[              ]    trace #%i at %s:%i: %s\n", ++tpunit_detail_stats()._traces, _file, _line, _message);
          }
 
       private:
@@ -468,14 +468,14 @@ namespace tpunit {
          #ifdef TPUNITPP_HAS_EXCEPTIONS
             #define __TPUNITPP_TRY      try
             #define __TPUNITPP_CATCH(E) catch(E)
-            #define __TPUNITPP_CAUSE(W) __exception(W)
+            #define __TPUNITPP_CAUSE(W) tpunit_detail_exception(W)
          #else
             #define __TPUNITPP_TRY      if(true)
             #define __TPUNITPP_CATCH(E) if(false)
             #define __TPUNITPP_CAUSE(W)
          #endif
 
-         static void __do_method(method* m) {
+         static void tpunit_detail_do_method(method* m) {
             __TPUNITPP_TRY {
                (*m->_this.*m->_addr)();
             } __TPUNITPP_CATCH(const std::exception& e) {
@@ -489,42 +489,42 @@ namespace tpunit {
          #undef __TPUNITPP_CATCH
          #undef __TPUNITPP_CAUSE
 
-         static void __do_methods(method* m) {
+         static void tpunit_detail_do_methods(method* m) {
             while(m) {
-               __do_method(m);
+               tpunit_detail_do_method(m);
                m = m->_next;
             }
          }
 
-         static void __do_tests(TestFixture* f) {
+         static void tpunit_detail_do_tests(TestFixture* f) {
             method* t = f->_tests;
             while(t) {
-               __do_methods(f->_befores);
+               tpunit_detail_do_methods(f->_befores);
 
-               int _prev_assertions = __stats()._assertions;
-               int _prev_exceptions = __stats()._exceptions;
+               int _prev_assertions = tpunit_detail_stats()._assertions;
+               int _prev_exceptions = tpunit_detail_stats()._exceptions;
                printf("[ RUN          ] %s\n", t->_name);
-               __do_method(t);
-               if(_prev_assertions == __stats()._assertions &&
-                  _prev_exceptions == __stats()._exceptions) {
+               tpunit_detail_do_method(t);
+               if(_prev_assertions == tpunit_detail_stats()._assertions &&
+                  _prev_exceptions == tpunit_detail_stats()._exceptions) {
                   printf("[       PASSED ] %s\n", t->_name);
-                  __stats()._passes++;
+                  tpunit_detail_stats()._passes++;
                } else {
                   printf("[       FAILED ] %s\n", t->_name);
-                  __stats()._failures++;
+                  tpunit_detail_stats()._failures++;
                }
                t = t->_next;
 
-               __do_methods(f->_afters);
+               tpunit_detail_do_methods(f->_afters);
             }
          }
 
-         static stats& __stats() {
+         static stats& tpunit_detail_stats() {
             static stats _stats;
             return _stats;
          }
 
-         static TestFixture** __fixtures() {
+         static TestFixture** tpunit_detail_fixtures() {
             static TestFixture* _fixtures = 0;
             return &_fixtures;
          }
@@ -548,7 +548,7 @@ namespace tpunit {
        * @return Number of failed assertions or zero if all tests pass.
        */
       static int run() {
-         return TestFixture::__do_run();
+         return TestFixture::tpunit_detail_do_run();
       }
    };
 } // namespace tpunit
