@@ -33,6 +33,9 @@ struct TPUnitPPTest : tpunit::TestFixture {
       TEST(TPUnitPPTest::test), TEST(TPUnitPPTest::test),
       TEST(TPUnitPPTest::test), TEST(TPUnitPPTest::test),
       TEST(TPUnitPPTest::test_invocations),
+#if defined(TPUNITPP_HAS_EXCEPTIONS)
+      TEST(TPUnitPPTest::test_exceptions),
+#endif
       TEST(TPUnitPPTest::test_macros),
       TEST(TPUnitPPTest::test_matchers),
       AFTER(TPUnitPPTest::after),
@@ -76,13 +79,16 @@ struct TPUnitPPTest : tpunit::TestFixture {
       ASSERT_FLOAT_EQUAL(0.0,         -0.0);               EXPECT_FLOAT_EQUAL(0.0,         -0.0);
       ASSERT_FLOAT_NEAR(3.14159265f,  3.1400001f, 0.002f); EXPECT_FLOAT_NEAR(3.14159265f,  3.1400001f, 0.002f); 
       ASSERT_FLOAT_NEAR(1.77245385,   1.77240000, 0.0005); EXPECT_FLOAT_NEAR(1.77245385,   1.77240000, 0.0005); 
-      #if defined(TPUNITPP_HAS_EXCEPTIONS)
+   }
+
+#if defined(TPUNITPP_HAS_EXCEPTIONS)
+   void test_exceptions() {
          int __dummy = 0;
          ASSERT_THROW(throw __dummy, int); EXPECT_THROW(throw __dummy, int);
          ASSERT_NO_THROW(__dummy = 1);     EXPECT_NO_THROW(__dummy = 1);
          ASSERT_ANY_THROW(throw __dummy);  EXPECT_ANY_THROW(throw __dummy);
-      #endif
    }
+#endif
 
    struct AlwaysMatches {
       template <typename T>
