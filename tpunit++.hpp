@@ -207,7 +207,7 @@ namespace tpunit {
 
             TestFixture* _this;
             void (TestFixture::*_addr)();
-            char _name[256];
+            char _name[1024];
 
             enum {
                AFTER_METHOD,  AFTER_CLASS_METHOD,
