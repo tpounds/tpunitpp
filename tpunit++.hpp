@@ -296,7 +296,6 @@ namespace tpunit {
             delete _befores;
             delete _before_classes;
             delete _tests;
-            delete _next;
          }
 
          /**
