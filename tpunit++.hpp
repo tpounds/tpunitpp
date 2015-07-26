@@ -488,12 +488,12 @@ namespace tpunit {
          static void tpunit_detail_do_tests(TestFixture* f) {
             method* t = f->_tests;
             while(t) {
-               tpunit_detail_do_methods(f->_befores);
-
                int _prev_assertions = tpunit_detail_stats()._assertions;
                int _prev_exceptions = tpunit_detail_stats()._exceptions;
                printf("[ RUN          ] %s\n", t->_name);
+               tpunit_detail_do_methods(f->_befores);
                tpunit_detail_do_method(t);
+               tpunit_detail_do_methods(f->_afters);
                if(_prev_assertions == tpunit_detail_stats()._assertions &&
                   _prev_exceptions == tpunit_detail_stats()._exceptions) {
                   printf("[       PASSED ] %s\n", t->_name);
@@ -503,8 +503,6 @@ namespace tpunit {
                   tpunit_detail_stats()._failures++;
                }
                t = t->_next;
-
-               tpunit_detail_do_methods(f->_afters);
             }
          }
 
