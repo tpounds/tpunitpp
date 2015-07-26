@@ -159,11 +159,11 @@ extern "C" int printf(const char*, ...);
  * used by all test functions.
  * TEST(function); registers a function to run as a test within a test fixture.
  */
-#define AFTER(M)        After(&M, "After: " #M)
-#define AFTER_CLASS(M)  AfterClass(&M, "AfterClass: " #M)
-#define BEFORE(M)       Before(&M, "Before: " #M)
-#define BEFORE_CLASS(M) BeforeClass(&M, "BeforeClass: " #M)
-#define TEST(M)         Test(&M, #M)
+#define AFTER(M)        Method(&M, #M, method::AFTER_METHOD)
+#define AFTER_CLASS(M)  Method(&M, #M, method::AFTER_CLASS_METHOD)
+#define BEFORE(M)       Method(&M, #M, method::BEFORE_METHOD)
+#define BEFORE_CLASS(M) Method(&M, #M, method::BEFORE_CLASS_METHOD)
+#define TEST(M)         Method(&M, #M, method::TEST_METHOD)
 
 /**
  * Try our best to detect compiler support for exception handling so
@@ -183,7 +183,7 @@ namespace tpunit {
     * define a few test methods and register them with the base constructor.
     */
    class TestFixture {
-      private:
+      protected:
 
          /**
           * Internal class encapsulating a registered test method.
@@ -299,60 +299,14 @@ namespace tpunit {
          }
 
          /**
-          * Registers a method to run once immediately after each test method registered with the test fixture.
+          * Create a new method to register with the test fixture.
           *
           * @param[in] _method A method to register with the test fixture.
           * @param[in] _name The internal name of the method used when status messages are displayed.
           */
          template <typename C>
-         method* After(void (C::*_method)(), const char* _name) {
-            return new method(this, static_cast<void (TestFixture::*)()>(_method), _name, method::AFTER_METHOD);
-         }
-
-         /**
-          * Registers a method to run once immediately after all after/before/test methods registered with
-          * the test fixture. Useful for cleaning up shared state used by methods in a test fixture.
-          *
-          * @param[in] _method A method to register with the test fixture.
-          * @param[in] _name The internal name of the method used when status messages are displayed.
-          */
-         template <typename C>
-         method* AfterClass(void (C::*_method)(), const char* _name) {
-            return new method(this, static_cast<void (TestFixture::*)()>(_method), _name, method::AFTER_CLASS_METHOD);
-         }
-
-         /**
-          * Registers a method to run once immediately before each test method registered with the test fixture.
-          *
-          * @param[in] _method A method to register with the test fixture.
-          * @param[in] _name The internal name of the method used when status messages are displayed.
-          */
-         template <typename C>
-         method* Before(void (C::*_method)(), const char* _name) {
-            return new method(this, static_cast<void (TestFixture::*)()>(_method), _name, method::BEFORE_METHOD);
-         }
-
-         /**
-          * Registers a method to run once immediately before all after/before/test methods registered with
-          * the test fixture. Useful for intializing shared state used by methods in a test fixture.
-          *
-          * @param[in] _method A method to register with the test fixture.
-          * @param[in] _name The internal name of the method used when status messages are displayed.
-          */
-         template <typename C>
-         method* BeforeClass(void (C::*_method)(), const char* _name) {
-            return new method(this, static_cast<void (TestFixture::*)()>(_method), _name, method::BEFORE_CLASS_METHOD);
-         }
-
-         /**
-          * Registers a method to run as a test with the test fixture.
-          *
-          * @param[in] _method A method to register with the test fixture.
-          * @param[in] _name The internal name of the method used when status messages are displayed.
-          */
-         template <typename C>
-         method* Test(void (C::*_method)(), const char* _name) {
-            return new method(this, static_cast<void (TestFixture::*)()>(_method), _name, method::TEST_METHOD);
+         method* Method(void (C::*_method)(), const char* _name, unsigned char _type) {
+            return new method(this, static_cast<void (TestFixture::*)()>(_method), _name, _type);
          }
 
          static int tpunit_detail_do_run() {
