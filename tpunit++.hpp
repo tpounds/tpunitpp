@@ -454,8 +454,8 @@ namespace tpunit {
             printf("[              ]    assertion #%i at %s:%i\n", ++tpunit_detail_stats()._assertions, _file, _line);
          }
 
-         static void tpunit_detail_exception(const char* _message) {
-            printf("[              ]    exception #%i cause: %s\n", ++tpunit_detail_stats()._exceptions, _message);
+         static void tpunit_detail_exception(method* _method, const char* _message) {
+            printf("[              ]    exception #%i from %s with cause: %s\n", ++tpunit_detail_stats()._exceptions, _method->_name, _message);
          }
 
          static void tpunit_detail_trace(const char* _file, int _line, const char* _message) {
@@ -471,9 +471,9 @@ namespace tpunit {
                (*m->_this.*m->_addr)();
             #ifdef TPUNITPP_HAS_EXCEPTIONS
             } catch(const std::exception& e) {
-               tpunit_detail_exception(e.what());
+               tpunit_detail_exception(m, e.what());
             } catch(...) {
-               tpunit_detail_exception("caught unknown exception type");
+               tpunit_detail_exception(m, "caught unknown exception type");
             }
             #endif
          }
