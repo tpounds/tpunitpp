@@ -86,7 +86,7 @@ struct TPUnitPPTest : tpunit::TestFixture {
          ASSERT_NO_THROW(__dummy = 1);     EXPECT_NO_THROW(__dummy = 1);
          ASSERT_ANY_THROW(throw __dummy);  EXPECT_ANY_THROW(throw __dummy);
 #else
-         TRACE("Test ignored. TPUNITPP_HAS_EXCEPTIONS = 0");
+         TRACE("TEST IGNORED! TPUNITPP_HAS_EXCEPTIONS = 0");
 #endif
    }
 
