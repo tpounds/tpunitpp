@@ -155,11 +155,11 @@
  * used by all test functions.
  * TEST(function); registers a function to run as a test within a test fixture.
  */
-#define AFTER(M)        Method(&M, #M, method::AFTER_METHOD)
-#define AFTER_CLASS(M)  Method(&M, #M, method::AFTER_CLASS_METHOD)
-#define BEFORE(M)       Method(&M, #M, method::BEFORE_METHOD)
-#define BEFORE_CLASS(M) Method(&M, #M, method::BEFORE_CLASS_METHOD)
-#define TEST(M)         Method(&M, #M, method::TEST_METHOD)
+#define AFTER(M)        (Method)(&M, #M, method::AFTER_METHOD)
+#define AFTER_CLASS(M)  (Method)(&M, #M, method::AFTER_CLASS_METHOD)
+#define BEFORE(M)       (Method)(&M, #M, method::BEFORE_METHOD)
+#define BEFORE_CLASS(M) (Method)(&M, #M, method::BEFORE_CLASS_METHOD)
+#define TEST(M)         (Method)(&M, #M, method::TEST_METHOD)
 
 /**
  * Try our best to detect compiler support for exception handling so
