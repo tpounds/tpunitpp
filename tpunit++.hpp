@@ -23,6 +23,7 @@
 #define __TPUNITPP_HPP__
 
 #include <cstdio>
+#include <string.h>
 
 /**
  * TPUNITPP_VERSION macro contains an integer represented by
@@ -305,14 +306,16 @@ namespace tpunit {
             return new method(this, static_cast<void (TestFixture::*)()>(_method), _name, _type);
          }
 
-         static int tpunit_detail_do_run() {
+         static int tpunit_detail_do_run(const char* test_name = 0) {
             TestFixture* f = *tpunit_detail_fixtures();
              while(f) {
-                printf("[--------------]\n");
-                tpunit_detail_do_methods(f->_before_classes);
-                tpunit_detail_do_tests(f);
-                tpunit_detail_do_methods(f->_after_classes);
-                printf("[--------------]\n\n");
+                if (test_name == 0 || (f->_name && !strcmp(test_name, f->_name))) {
+                   printf("[--------------]\n");
+                   tpunit_detail_do_methods(f->_before_classes);
+                   tpunit_detail_do_tests(f);
+                   tpunit_detail_do_methods(f->_after_classes);
+                   printf("[--------------]\n\n");
+                }
                 f = f->_next;
              }
              printf("[==============]\n");
@@ -412,6 +415,8 @@ namespace tpunit {
             printf("[              ]    trace #%i at %s:%i: %s\n", ++tpunit_detail_stats()._traces, _file, _line, _message);
          }
 
+         const char* _name = 0;
+
       private:
 
          static void tpunit_detail_do_method(method* m) {
@@ -487,6 +492,16 @@ namespace tpunit {
       static int run() {
          return TestFixture::tpunit_detail_do_run();
       }
+
+      /**
+       * Run only registered test cases whose names match the given string, and return the number of failed assertions.
+       *
+       * @return Number of failed assertions or zero if all tests pass.
+       */
+      static int run(const char* test_name) {
+          return TestFixture::tpunit_detail_do_run(test_name);
+      }
+
    };
 } // namespace tpunit
 #endif //__TPUNITPP_HPP__
