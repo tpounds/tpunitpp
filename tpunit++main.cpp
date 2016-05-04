@@ -20,12 +20,33 @@
  * THE SOFTWARE.
  */
 #include "tpunit++.hpp"
+#include <string>
+#include <set>
 
-int main() {
+void parse_options(int argc, char* argv[], std::set<std::string>& include, std::set<std::string>& exclude) {
+   for (int i = 0; i < argc; i++){
+      char* arg = argv[i];
+      char* in = strstr(arg, "--include=");
+      char* ex = strstr(arg, "--exclude=");
+      if (in == arg) {
+         include.insert(arg + 10);
+      }
+      else if (ex == arg) {
+         exclude.insert(arg + 10);
+      }
+   }
+}
+
+int main(int argc, char* argv[]) {
+
+   std::set<std::string> include, exclude;
+   parse_options(argc, argv, include, exclude);
+
    /**
-    * Run all of the registered tpunit++ tests. Returns 0 if
-    * all tests are successful, otherwise returns the number
-    * of failing assertions.
+    * Run all of the registered tpunit++ tests that aren't excluded based on
+    * the command line arguments.
+    * Returns 0 if all tests are successful, otherwise returns the number of
+    * failing assertions.
     */
-   return tpunit::Tests::run();
+   return tpunit::Tests::run(include, exclude);
 }
