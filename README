@@ -26,7 +26,7 @@ Notes:
 Some compilers have issues using the fully qualified class with namespace
 syntax (e.g. ns::class). Try the 'using' directive to workaround the issue.
 
-e.g.  using namesapce tpunit;
+e.g.  using namespace tpunit;
       using tpunit::TestFixture;
 
 The primary issue preventing tpunit++ from working with a compiler is a lack

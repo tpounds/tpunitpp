@@ -62,7 +62,7 @@
  * is not satisfied.
  * EXPECT_*(...); generates a failure, allowing the currently
  * executing test function to continue if the supplied predicate
- * is not satisified.
+ * is not satisfied.
  */
 #define ASSERT_TRUE(condition) if(condition) { PASS(); } else { ABORT(); }
 #define EXPECT_TRUE(condition) if(condition) { PASS(); } else { FAIL(); }
@@ -101,7 +101,7 @@
  * explicitly turned off using a compiler flag (e.g. -fno-exceptions).
  *
  * ASSERT|EXPECT_THROW(statement, exception); generates a failure if
- * the given statement does not throw the supplied excetion.
+ * the given statement does not throw the supplied exception.
  * ASSERT|EXPECT_NO_THROW(statement, exception); generates a failure
  * if the given statement throws any exception. Useful for ensuring
  * a statement never throws an exception.
