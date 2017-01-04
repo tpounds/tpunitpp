@@ -23,6 +23,8 @@
 #define __TPUNITPP_HPP__
 
 #include <cstdio>
+#include <set>
+#include <string>
 
 /**
  * TPUNITPP_VERSION macro contains an integer represented by
@@ -154,12 +156,14 @@
  * functions within a test fixture. Useful for initializing shared state
  * used by all test functions.
  * TEST(function); registers a function to run as a test within a test fixture.
+ * NAME(testName); Sets a name for the test so it can be included/excluded.
  */
 #define AFTER(M)        Method(&M, #M, method::AFTER_METHOD)
 #define AFTER_CLASS(M)  Method(&M, #M, method::AFTER_CLASS_METHOD)
 #define BEFORE(M)       Method(&M, #M, method::BEFORE_METHOD)
 #define BEFORE_CLASS(M) Method(&M, #M, method::BEFORE_CLASS_METHOD)
 #define TEST(M)         Method(&M, #M, method::TEST_METHOD)
+#define NAME(M)         _name = (#M)
 
 /**
  * Try our best to detect compiler support for exception handling so
@@ -284,6 +288,7 @@ namespace tpunit {
                   (*m) ? (*m)->_next = methods[i] : *m = methods[i];
                }
             }
+            _name = 0;
          }
 
          ~TestFixture() {
@@ -306,13 +311,34 @@ namespace tpunit {
          }
 
          static int tpunit_detail_do_run() {
+            const std::set<std::string> include, exclude;
+            return tpunit_detail_do_run(include, exclude);
+         }
+
+         static int tpunit_detail_do_run(const std::set<std::string>& include, const std::set<std::string>& exclude) {
             TestFixture* f = *tpunit_detail_fixtures();
-             while(f) {
-                printf("[--------------]\n");
-                tpunit_detail_do_methods(f->_before_classes);
-                tpunit_detail_do_tests(f);
-                tpunit_detail_do_methods(f->_after_classes);
-                printf("[--------------]\n\n");
+            /*
+            * Run specific tests by name. If 'include' is empty, then every test is
+            * run unless it's in 'exclude'. If 'include' has at least one entry,
+            * then only tests in 'include' are run, and 'exclude' is ignored.
+            */
+             while (f) {
+                bool should_run = true;
+                if (include.size()) {
+                   if (!f->_name || (include.find(std::string(f->_name)) == include.end())) {
+                      should_run = false;
+                   }
+                }
+                else if (f->_name && (exclude.find(std::string(f->_name)) != exclude.end())) {
+                   should_run = false;
+                }
+                if (should_run) {
+                   printf("[--------------]\n");
+                   tpunit_detail_do_methods(f->_before_classes);
+                   tpunit_detail_do_tests(f);
+                   tpunit_detail_do_methods(f->_after_classes);
+                   printf("[--------------]\n\n");
+                }
                 f = f->_next;
              }
              printf("[==============]\n");
@@ -412,6 +438,8 @@ namespace tpunit {
             printf("[              ]    trace #%i at %s:%i: %s\n", ++tpunit_detail_stats()._traces, _file, _line, _message);
          }
 
+         const char* _name;
+
       private:
 
          static void tpunit_detail_do_method(method* m) {
@@ -487,6 +515,18 @@ namespace tpunit {
       static int run() {
          return TestFixture::tpunit_detail_do_run();
       }
+
+      /**
+       * Run specific tests by name. If 'include' is empty, then every test is
+       * run unless it's in 'exclude'. If 'include' has at least one entry,
+       * then only tests in 'include' are run, and 'exclude' is ignored.
+       *
+       * @return Number of failed assertions or zero if all tests pass.
+       */
+      static int run(const std::set<std::string>& include, const std::set<std::string>& exclude) {
+         return TestFixture::tpunit_detail_do_run(include, exclude);
+      }
+
    };
 } // namespace tpunit
 #endif //__TPUNITPP_HPP__

@@ -39,7 +39,9 @@ struct TPUnitPPTest : tpunit::TestFixture {
       AFTER(TPUnitPPTest::after),
       AFTER_CLASS(TPUnitPPTest::after_class)
    )
-   {}
+   {
+      NAME(TPUnitPPTest);
+   }
 
    int __after_num,  __after_class_num,
        __before_num, __before_class_num,
