@@ -234,8 +234,6 @@ namespace tpunit {
             int _traces;
          };
 
-      public:
-
          /**
           * Base constructor to register methods with the test fixture. A test
           * fixture can register up to 50 methods.
@@ -304,6 +302,8 @@ namespace tpunit {
          method* tpunit_detail_method(void (C::*_method)(), const char* _name, unsigned char _type) {
             return new method(this, static_cast<void (TestFixture::*)()>(_method), _name, _type);
          }
+
+      public:
 
          static int tpunit_detail_do_run() {
             TestFixture* f = *tpunit_detail_fixtures();
