@@ -39,11 +39,11 @@ alphanumeric characters (e.g. tpunit++main.cpp). Try renaming these files
 to include only alphanumeric characters or configure the compiler to emit
 object files that do not include illegal characters.
 
-|-----------------|----------------------------|--------|
++-------------------------------------------------------+
 | version         | flags                      | status |
-|-----------------|----------------------------|--------|
++-------------------------------------------------------+
 | GCC (http://gcc.gnu.org)                              |
-|-------------------------------------------------------|
++-------------------------------------------------------+
 | 2.95.3          | <default>, -fno-exceptions | works  |
 | 3.0.4           | <default>, -fno-exceptions | works  |
 | 3.1.1           | <default>, -fno-exceptions | works  |
@@ -62,9 +62,9 @@ object files that do not include illegal characters.
 | 4.9.2           | <default>, -fno-exceptions | works  |
 | 5.1.0           | <default>, -fno-exceptions | works  |
 | 5.2.0           | <default>, -fno-exceptions | works  |
-|-----------------|----------------------------|--------|
++-------------------------------------------------------+
 | MSVC++ (http://www.microsoft.com)                     |
-|-------------------------------------------------------|
++-------------------------------------------------------+
 | 6.0             | <default>, /EHsc           | works  |
 | .NET 2002 (7.0) | <default>, /EHsc           | works  |
 | .NET 2003 (7.1) | <default>, /EHsc           | works  |
@@ -73,13 +73,13 @@ object files that do not include illegal characters.
 | 2010 (10.0)     | <default>, /EHsc           | works  |
 | 2012 (11.0)     | <default>, /EHsc           | works  |
 | 2013 (12.0)     | <default>, /EHsc           | works  |
-|-----------------|----------------------------|--------|
++-------------------------------------------------------+
 | Borland C++ (http://www.borland.com)                  |
-|-------------------------------------------------------|
++-------------------------------------------------------+
 | 5.5             | <default>                  | works  |
-|-------------------------------------------------------|
++-------------------------------------------------------+
 | Open Watcom (http://www.openwatcom.org)               |
-|-------------------------------------------------------|
++-------------------------------------------------------+
 | 1.0             | <default>                  | broken |
 | 1.1             | <default>                  | broken |
 | 1.2             | <default>                  | broken |
@@ -90,9 +90,9 @@ object files that do not include illegal characters.
 | 1.7             | <default>                  | works  |
 | 1.8             | <default>                  | works  |
 | 1.9             | <default>                  | works  |
-|-------------------------------------------------------|
++-------------------------------------------------------+
 | Clang (http://clang.llvm.org/)                        |
-|-------------------------------------------------------|
++-------------------------------------------------------+
 | 2.6             | <default>, -fno-exceptions | works  |
 | 2.7             | <default>, -fno-exceptions | works  |
 | 2.8             | <default>, -fno-exceptions | works  |
@@ -106,9 +106,9 @@ object files that do not include illegal characters.
 | 3.6.x           | <default>, -fno-exceptions | works  |
 | 3.7.x           | <default>, -fno-exceptions | works  |
 | 3.8.x           | <default>, -fno-exceptions | works  |
-|-------------------------------------------------------|
++-------------------------------------------------------+
 | Digital Mars C++ (http://www.digitalmars.com/)        |
-|-------------------------------------------------------|
++-------------------------------------------------------+
 | 7.7B1n          | <default>, -Ae             | broken |
 | 8.1B5n          | <default>, -Ae             | broken |
 | 8.20n           | <default>, -Ae             | broken |
@@ -118,4 +118,4 @@ object files that do not include illegal characters.
 | 8.40.2n         | <default>, -Ae             | works  |
 | 8.52.5n         | <default>, -Ae             | works  |
 | 8.57.0n         | <default>, -Ae             | works  |
-|-------------------------------------------------------|
++-------------------------------------------------------+
