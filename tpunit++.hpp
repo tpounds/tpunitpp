@@ -249,7 +249,9 @@ namespace tpunit {
                      method* m30 = 0, method* m31 = 0, method* m32 = 0, method* m33 = 0, method* m34 = 0,
                      method* m35 = 0, method* m36 = 0, method* m37 = 0, method* m38 = 0, method* m39 = 0,
                      method* m40 = 0, method* m41 = 0, method* m42 = 0, method* m43 = 0, method* m44 = 0,
-                     method* m45 = 0, method* m46 = 0, method* m47 = 0, method* m48 = 0, method* m49 = 0) {
+                     method* m45 = 0, method* m46 = 0, method* m47 = 0, method* m48 = 0, method* m49 = 0)
+            : _next(0), _afters(0), _after_classes(0), _befores(0), _before_classes(0), _tests(0)
+         {
             TestFixture** f = tpunit_detail_fixtures();
             if (*f) {
                while((*f)->_next) {
