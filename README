@@ -110,6 +110,8 @@ object files that do not include illegal characters.
 | 4.0.x           | <default>, -fno-exceptions | works  |
 | 5.0.x           | <default>, -fno-exceptions | works  |
 | 6.0.x           | <default>, -fno-exceptions | works  |
+| 7.x             | <default>, -fno-exceptions | works  |
+| 8.x             | <default>, -fno-exceptions | works  |
 +-------------------------------------------------------+
 | Digital Mars C++ (http://www.digitalmars.com/)        |
 +-------------------------------------------------------+
