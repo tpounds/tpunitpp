@@ -305,26 +305,6 @@ namespace tpunit {
             return new method(this, static_cast<void (TestFixture::*)()>(_method), _name, _type);
          }
 
-      public:
-
-         static int tpunit_detail_do_run() {
-            TestFixture* f = *tpunit_detail_fixtures();
-             while (f) {
-                printf("[--------------]\n");
-                tpunit_detail_do_methods(f->_before_classes);
-                tpunit_detail_do_tests(f);
-                tpunit_detail_do_methods(f->_after_classes);
-                printf("[--------------]\n\n");
-                f = f->_next;
-             }
-             printf("[==============]\n");
-             printf("[ TEST RESULTS ] Passed: %i, Failed: %i\n", tpunit_detail_stats()._passes, tpunit_detail_stats()._failures);
-             printf("[==============]\n");
-             return tpunit_detail_stats()._failures;
-         }
-
-      protected:
-
          /**
           * Determine if two binary32 single precision IEEE 754 floating-point
           * numbers are equal using unit in the last place (ULP) analysis.
@@ -414,6 +394,22 @@ namespace tpunit {
             printf("[              ]    trace #%i at %s:%i: %s\n", ++tpunit_detail_stats()._traces, _file, _line, _message);
          }
 
+         static int tpunit_detail_do_run() {
+            TestFixture* f = *tpunit_detail_fixtures();
+            while (f) {
+               printf("[--------------]\n");
+               tpunit_detail_do_methods(f->_before_classes);
+               tpunit_detail_do_tests(f);
+               tpunit_detail_do_methods(f->_after_classes);
+               printf("[--------------]\n\n");
+               f = f->_next;
+            }
+            printf("[==============]\n");
+            printf("[ TEST RESULTS ] Passed: %i, Failed: %i\n", tpunit_detail_stats()._passes, tpunit_detail_stats()._failures);
+            printf("[==============]\n");
+            return tpunit_detail_stats()._failures;
+         }
+
       private:
 
          static void tpunit_detail_do_method(method* m) {
@@ -480,14 +476,14 @@ namespace tpunit {
    /**
     * Convenience class containing the entry point to run all registered tests.
     */
-   struct Tests {
+   struct Tests : TestFixture {
       /**
        * Run all registered test cases and return the number of failed assertions.
        *
        * @return Number of failed assertions or zero if all tests pass.
        */
       static int run() {
-         return TestFixture::tpunit_detail_do_run();
+         return tpunit_detail_do_run();
       }
    };
 } // namespace tpunit
