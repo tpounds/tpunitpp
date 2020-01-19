@@ -191,7 +191,7 @@ namespace tpunit {
                , _type(type)
                , _next(0) {
                char* dest = _name;
-               while(name && *name != 0) {
+               while (name && *name != 0) {
                   *dest++ = *name++;
                }
                *dest = 0;
@@ -254,7 +254,7 @@ namespace tpunit {
          {
             TestFixture** f = tpunit_detail_fixtures();
             if (*f) {
-               while((*f)->_next) {
+               while ((*f)->_next) {
                   f = &((*f)->_next);
                }
                (*f)->_next = this;
@@ -268,8 +268,8 @@ namespace tpunit {
                                     m30, m31, m32, m33, m34, m35, m36, m37, m38, m39,
                                     m40, m41, m42, m43, m44, m45, m46, m47, m48, m49 };
 
-            for(int i = 0; i < 50; i++) {
-               if(methods[i]) {
+            for (int i = 0; i < 50; i++) {
+               if (methods[i]) {
                   method** m = 0;
                   switch(methods[i]->_type) {
                      case method::AFTER_METHOD:        m = &_afters;         break;
@@ -278,7 +278,7 @@ namespace tpunit {
                      case method::BEFORE_CLASS_METHOD: m = &_before_classes; break;
                      case method::TEST_METHOD:         m = &_tests;          break;
                   }
-                  while(*m && (*m)->_next) {
+                  while (*m && (*m)->_next) {
                      m = &(*m)->_next;
                   }
                   (*m) ? (*m)->_next = methods[i] : *m = methods[i];
@@ -309,7 +309,7 @@ namespace tpunit {
 
          static int tpunit_detail_do_run() {
             TestFixture* f = *tpunit_detail_fixtures();
-             while(f) {
+             while (f) {
                 printf("[--------------]\n");
                 tpunit_detail_do_methods(f->_before_classes);
                 tpunit_detail_do_tests(f);
@@ -342,13 +342,13 @@ namespace tpunit {
             bool lil_endian = ((unsigned char) 0x00FF) == 0xFF;
             int msb = lil_endian ? 3 : 0;
             int lsb = lil_endian ? 0 : 3;
-            if(lhs_u.c[msb] < 0) {
+            if (lhs_u.c[msb] < 0) {
                lhs_u.c[0 ^ lsb] = 0x00 - lhs_u.c[0 ^ lsb];
                lhs_u.c[1 ^ lsb] = (((unsigned char) lhs_u.c[0 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[1 ^ lsb];
                lhs_u.c[2 ^ lsb] = (((unsigned char) lhs_u.c[1 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[2 ^ lsb];
                lhs_u.c[3 ^ lsb] = (((unsigned char) lhs_u.c[2 ^ lsb] > 0x00) ? 0x7F : 0x80) - lhs_u.c[3 ^ lsb];
             }
-            if(rhs_u.c[msb] < 0) {
+            if (rhs_u.c[msb] < 0) {
                rhs_u.c[0 ^ lsb] = 0x00 - rhs_u.c[0 ^ lsb];
                rhs_u.c[1 ^ lsb] = (((unsigned char) rhs_u.c[0 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[1 ^ lsb];
                rhs_u.c[2 ^ lsb] = (((unsigned char) rhs_u.c[1 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[2 ^ lsb];
@@ -375,7 +375,7 @@ namespace tpunit {
             bool lil_endian = ((unsigned char) 0x00FF) == 0xFF;
             int msb = lil_endian ? 7 : 0;
             int lsb = lil_endian ? 0 : 7;
-            if(lhs_u.c[msb] < 0) {
+            if (lhs_u.c[msb] < 0) {
                lhs_u.c[0 ^ lsb] = 0x00 - lhs_u.c[0 ^ lsb];
                lhs_u.c[1 ^ lsb] = (((unsigned char) lhs_u.c[0 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[1 ^ lsb];
                lhs_u.c[2 ^ lsb] = (((unsigned char) lhs_u.c[1 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[2 ^ lsb];
@@ -385,7 +385,7 @@ namespace tpunit {
                lhs_u.c[6 ^ lsb] = (((unsigned char) lhs_u.c[5 ^ lsb] > 0x00) ? 0xFF : 0x00) - lhs_u.c[6 ^ lsb];
                lhs_u.c[7 ^ lsb] = (((unsigned char) lhs_u.c[6 ^ lsb] > 0x00) ? 0x7F : 0x80) - lhs_u.c[7 ^ lsb];
             }
-            if(rhs_u.c[msb] < 0) {
+            if (rhs_u.c[msb] < 0) {
                rhs_u.c[0 ^ lsb] = 0x00 - rhs_u.c[0 ^ lsb];
                rhs_u.c[1 ^ lsb] = (((unsigned char) rhs_u.c[0 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[1 ^ lsb];
                rhs_u.c[2 ^ lsb] = (((unsigned char) rhs_u.c[1 ^ lsb] > 0x00) ? 0xFF : 0x00) - rhs_u.c[2 ^ lsb];
@@ -431,7 +431,7 @@ namespace tpunit {
          }
 
          static void tpunit_detail_do_methods(method* m) {
-            while(m) {
+            while (m) {
                tpunit_detail_do_method(m);
                m = m->_next;
             }
@@ -439,14 +439,14 @@ namespace tpunit {
 
          static void tpunit_detail_do_tests(TestFixture* f) {
             method* t = f->_tests;
-            while(t) {
+            while (t) {
                int _prev_assertions = tpunit_detail_stats()._assertions;
                int _prev_exceptions = tpunit_detail_stats()._exceptions;
                printf("[ RUN          ] %s\n", t->_name);
                tpunit_detail_do_methods(f->_befores);
                tpunit_detail_do_method(t);
                tpunit_detail_do_methods(f->_afters);
-               if(_prev_assertions == tpunit_detail_stats()._assertions &&
+               if (_prev_assertions == tpunit_detail_stats()._assertions &&
                   _prev_exceptions == tpunit_detail_stats()._exceptions) {
                   printf("[       PASSED ] %s\n", t->_name);
                   tpunit_detail_stats()._passes++;
