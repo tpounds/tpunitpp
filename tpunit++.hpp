@@ -235,55 +235,16 @@ namespace tpunit {
          };
 
          /**
-          * Base constructor to register methods with the test fixture. A test
-          * fixture can register up to 50 methods.
-          *
-          * @param[in] m0..m49 The methods to register with the test fixture.
+          * Create a new test fixture and register methods defined within the constructor body.
           */
-         TestFixture(method* m0,      method* m1  = 0, method* m2  = 0, method* m3  = 0, method* m4  = 0,
-                     method* m5  = 0, method* m6  = 0, method* m7  = 0, method* m8  = 0, method* m9  = 0,
-                     method* m10 = 0, method* m11 = 0, method* m12 = 0, method* m13 = 0, method* m14 = 0,
-                     method* m15 = 0, method* m16 = 0, method* m17 = 0, method* m18 = 0, method* m19 = 0,
-                     method* m20 = 0, method* m21 = 0, method* m22 = 0, method* m23 = 0, method* m24 = 0,
-                     method* m25 = 0, method* m26 = 0, method* m27 = 0, method* m28 = 0, method* m29 = 0,
-                     method* m30 = 0, method* m31 = 0, method* m32 = 0, method* m33 = 0, method* m34 = 0,
-                     method* m35 = 0, method* m36 = 0, method* m37 = 0, method* m38 = 0, method* m39 = 0,
-                     method* m40 = 0, method* m41 = 0, method* m42 = 0, method* m43 = 0, method* m44 = 0,
-                     method* m45 = 0, method* m46 = 0, method* m47 = 0, method* m48 = 0, method* m49 = 0)
+         TestFixture()
             : _afters(0), _after_classes(0), _befores(0), _before_classes(0), _tests(0), _next(0)
          {
             TestFixture** f = tpunit_detail_fixtures();
-            if (*f) {
-               while ((*f)->_next) {
-                  f = &((*f)->_next);
-               }
-               (*f)->_next = this;
-            } else {
-               *f = this;
+            while (*f && (*f)->_next) {
+               f = &((*f)->_next);
             }
-
-            method* methods[50] = { m0,  m1,  m2,  m3,  m4,  m5,  m6,  m7,  m8,  m9,
-                                    m10, m11, m12, m13, m14, m15, m16, m17, m18, m19,
-                                    m20, m21, m22, m23, m24, m25, m26, m27, m28, m29,
-                                    m30, m31, m32, m33, m34, m35, m36, m37, m38, m39,
-                                    m40, m41, m42, m43, m44, m45, m46, m47, m48, m49 };
-
-            for (int i = 0; i < 50; i++) {
-               if (methods[i]) {
-                  method** m = 0;
-                  switch(methods[i]->_type) {
-                     case method::AFTER_METHOD:        m = &_afters;         break;
-                     case method::AFTER_CLASS_METHOD:  m = &_after_classes;  break;
-                     case method::BEFORE_METHOD:       m = &_befores;        break;
-                     case method::BEFORE_CLASS_METHOD: m = &_before_classes; break;
-                     case method::TEST_METHOD:         m = &_tests;          break;
-                  }
-                  while (*m && (*m)->_next) {
-                     m = &(*m)->_next;
-                  }
-                  (*m) ? (*m)->_next = methods[i] : *m = methods[i];
-               }
-            }
+            ((*f) ? (*f)->_next : *f) = this;
          }
 
          ~TestFixture() {
@@ -295,14 +256,27 @@ namespace tpunit {
          }
 
          /**
-          * Create a new method to register with the test fixture.
+          * Register a method with the test fixture.
           *
-          * @param[in] _method A method to register with the test fixture.
-          * @param[in] _name The internal name of the method used when status messages are displayed.
+          * @param[in] _method The method to register with the test fixture.
+          * @param[in] _name The method name used when status messages are displayed.
+          * @param[in] _type The method type to register.
           */
          template <typename C>
-         method* tpunit_detail_method(void (C::*_method)(), const char* _name, unsigned char _type) {
-            return new method(this, static_cast<void (TestFixture::*)()>(_method), _name, _type);
+         void tpunit_detail_method(void (C::*_method)(), const char* _name, unsigned char _type) {
+            method** m = 0;
+            switch(_type) {
+               case method::AFTER_METHOD:        m = &_afters;         break;
+               case method::AFTER_CLASS_METHOD:  m = &_after_classes;  break;
+               case method::BEFORE_METHOD:       m = &_befores;        break;
+               case method::BEFORE_CLASS_METHOD: m = &_before_classes; break;
+               case method::TEST_METHOD:         m = &_tests;          break;
+            }
+            while (*m && (*m)->_next) {
+               m = &(*m)->_next;
+            }
+            ((*m) ? (*m)->_next : *m)
+               = new method(this, static_cast<void (TestFixture::*)()>(_method), _name, _type);
          }
 
          /**

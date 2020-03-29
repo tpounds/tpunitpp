@@ -25,21 +25,20 @@
  * Test tpunit++ internal logic, macros and compiler support.
  */
 struct TPUnitPPTest : tpunit::TestFixture {
-   TPUnitPPTest() : tpunit::TestFixture (
-      BEFORE_CLASS(TPUnitPPTest::before_class),
-      BEFORE(TPUnitPPTest::before),
-      TEST(TPUnitPPTest::test), TEST(TPUnitPPTest::test),
-      TEST(TPUnitPPTest::test), TEST(TPUnitPPTest::test),
-      TEST(TPUnitPPTest::test), TEST(TPUnitPPTest::test),
-      TEST(TPUnitPPTest::test), TEST(TPUnitPPTest::test),
-      TEST(TPUnitPPTest::test_invocations),
-      TEST(TPUnitPPTest::test_exceptions),
-      TEST(TPUnitPPTest::test_macros),
-      TEST(TPUnitPPTest::test_matchers),
-      AFTER(TPUnitPPTest::after),
-      AFTER_CLASS(TPUnitPPTest::after_class)
-   )
-   {}
+   TPUnitPPTest() {
+      BEFORE_CLASS(TPUnitPPTest::before_class);
+      BEFORE(TPUnitPPTest::before);
+      TEST(TPUnitPPTest::test); TEST(TPUnitPPTest::test);
+      TEST(TPUnitPPTest::test); TEST(TPUnitPPTest::test);
+      TEST(TPUnitPPTest::test); TEST(TPUnitPPTest::test);
+      TEST(TPUnitPPTest::test); TEST(TPUnitPPTest::test);
+      TEST(TPUnitPPTest::test_invocations);
+      TEST(TPUnitPPTest::test_exceptions);
+      TEST(TPUnitPPTest::test_macros);
+      TEST(TPUnitPPTest::test_matchers);
+      AFTER(TPUnitPPTest::after);
+      AFTER_CLASS(TPUnitPPTest::after_class);
+   }
 
    int __after_num,  __after_class_num,
        __before_num, __before_class_num,
