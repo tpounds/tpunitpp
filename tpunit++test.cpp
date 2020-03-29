@@ -28,14 +28,11 @@ struct TPUnitPPTest : tpunit::TestFixture {
    TPUnitPPTest() {
       BEFORE_CLASS(TPUnitPPTest::before_class);
       BEFORE(TPUnitPPTest::before);
-      TEST(TPUnitPPTest::test); TEST(TPUnitPPTest::test);
-      TEST(TPUnitPPTest::test); TEST(TPUnitPPTest::test);
-      TEST(TPUnitPPTest::test); TEST(TPUnitPPTest::test);
-      TEST(TPUnitPPTest::test); TEST(TPUnitPPTest::test);
-      TEST(TPUnitPPTest::test_invocations);
+      TEST(TPUnitPPTest::test);
       TEST(TPUnitPPTest::test_exceptions);
       TEST(TPUnitPPTest::test_macros);
       TEST(TPUnitPPTest::test_matchers);
+      TEST(TPUnitPPTest::test_stats);
       AFTER(TPUnitPPTest::after);
       AFTER_CLASS(TPUnitPPTest::after_class);
    }
@@ -50,12 +47,12 @@ struct TPUnitPPTest : tpunit::TestFixture {
    void before_class() { __before_class_num++; }
    void test()         { __test_num++; }
 
-   void test_invocations() {
-      ASSERT_EQUAL(__after_num,        8);
+   void test_stats() {
+      ASSERT_EQUAL(__after_num,        4);
       ASSERT_EQUAL(__after_class_num,  0);
-      ASSERT_EQUAL(__before_num,       9);
+      ASSERT_EQUAL(__before_num,       5);
       ASSERT_EQUAL(__before_class_num, 1);
-      ASSERT_EQUAL(__test_num,         8);
+      ASSERT_EQUAL(__test_num,         1);
    }
 
    void test_macros() {
